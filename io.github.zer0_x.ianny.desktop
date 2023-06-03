@@ -1,0 +1,12 @@
+[Desktop Entry]
+Version=1.5
+Type=Application
+Name=Ianny
+Comment=Help preventing repetitive strain injuries by keeping track of usage patterns and periodically informing user to take breaks.
+GenericName=Eye Protector
+Exec=ianny
+SingleMainWindow=true
+Icon=io.github.zer0_x.ianny
+Terminal=false
+Categories=Utility
+Keywords=RSI;eye;
