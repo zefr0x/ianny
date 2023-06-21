@@ -8,17 +8,17 @@ Simple, light-weight, easy to use, and effective [Linux](https://en.wikipedia.or
 
 ## Features
 
-- ⚙ Simple settings to tweak application behavior. `[WIP]`
+- ⚙ Simple config to tweak application behavior. `[WIP]`
+- 🔒Optionally lock your screen with your desktop environment`s locker. `[WIP]`
 - 🚀 Auto start it with your desktop environment. `[WIP]`
 - 🚫 [X11](https://en.wikipedia.org/wiki/X_Window_System) is not supported.
 - 🚫 Microsoft Windows is definitely not supported.
 
 ## Requirements
 
-- [GTK4](https://www.gtk.org/)
-- [GTK4 Layer Shell](https://github.com/wmww/gtk4-layer-shell)
-- [Adwaita](https://gitlab.gnome.org/GNOME/libadwaita/)
-- Wayland compositor that support the `Layer Shell` protocol, as listed [here](https://github.com/wmww/gtk4-layer-shell#supported-desktops).
+- [Notification Daemon](https://wiki.archlinux.org/title/Desktop_notifications#Notification_servers) that implements [`org.freedesktop.Notifications`](https://specifications.freedesktop.org/notification-spec/notification-spec-latest.html)
+- [Wayland Compositor](https://en.wikipedia.org/wiki/Wayland_(protocol)#Wayland_compositors)
+- [Systemd](https://en.wikipedia.org/wiki/Systemd) for the lock functionality `(Optional)`
 
 ## Installation
 
