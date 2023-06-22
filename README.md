@@ -9,16 +9,15 @@ Simple, light-weight, easy to use, and effective [Linux](https://en.wikipedia.or
 ## Features
 
 - ⚙ Simple config to tweak application behavior. `[WIP]`
-- 🔒Optionally lock your screen with your desktop environment`s locker. `[WIP]`
 - 🚀 Auto start it with your desktop environment. `[WIP]`
 - 🚫 [X11](https://en.wikipedia.org/wiki/X_Window_System) is not supported.
 - 🚫 Microsoft Windows is definitely not supported.
 
 ## Requirements
 
-- [Notification Daemon](https://wiki.archlinux.org/title/Desktop_notifications#Notification_servers) that implements [`org.freedesktop.Notifications`](https://specifications.freedesktop.org/notification-spec/notification-spec-latest.html)
 - [Wayland Compositor](https://en.wikipedia.org/wiki/Wayland_(protocol)#Wayland_compositors)
-- [Systemd](https://en.wikipedia.org/wiki/Systemd) for the lock functionality `(Optional)`
+- [Notification Daemon](https://wiki.archlinux.org/title/Desktop_notifications#Notification_servers) that implements [`org.freedesktop.Notifications`](https://specifications.freedesktop.org/notification-spec/notification-spec-latest.html)
+- [libdbus-1.so](https://www.freedesktop.org/wiki/Software/dbus/) installed in your system
 
 ## Installation
 

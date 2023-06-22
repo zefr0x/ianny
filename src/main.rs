@@ -1,3 +1,4 @@
+extern crate notify_rust;
 extern crate primapalooza;
 extern crate single_instance;
 extern crate wayland_client;
@@ -6,6 +7,7 @@ extern crate wayland_protocols_plasma;
 
 use primapalooza::greatest_common_factor;
 use single_instance::SingleInstance;
+use std::time::Duration;
 use std::{
     ops::AddAssign,
     sync::{Arc, Condvar, Mutex},
@@ -22,7 +24,7 @@ struct State {
     idle_notifier: Option<ext_idle_notifier_v1::ExtIdleNotifierV1>,
     kde_kwin_idle: Option<org_kde_kwin_idle::OrgKdeKwinIdle>,
     is_active: Arc<(Mutex<bool>, Condvar)>,
-    idle_timeout: std::time::Duration,
+    idle_timeout: Duration,
 }
 
 impl wayland_client::Dispatch<wl_registry::WlRegistry, ()> for State {
@@ -171,6 +173,36 @@ impl wayland_client::Dispatch<org_kde_kwin_idle_timeout::OrgKdeKwinIdleTimeout, 
     }
 }
 
+fn show_break_notification(break_time: Duration, notification_sound_hint: notify_rust::Hint) {
+    use notify_rust::{Hint, Notification, Timeout, Urgency};
+
+    let mut handle = Notification::new()
+        // TODO: Localize messages and adapt words with number.
+        .summary("Break Time!")
+        .body(&format!(
+            "Take a break for <b>{} minutes</b>.",
+            break_time.as_secs() / 60
+        ))
+        .icon(APP_ID)
+        .appname("Ianny")
+        .hint(notification_sound_hint)
+        .hint(Hint::Urgency(Urgency::Critical))
+        .hint(Hint::Resident(true))
+        .timeout(Timeout::Never)
+        .show()
+        .unwrap();
+
+    // Progress bar.
+    let step = break_time.div_f32(100.0);
+    for i in 0..100 {
+        handle.hint(Hint::CustomInt("value".to_owned(), i));
+        handle.update();
+        std::thread::sleep(step);
+    }
+
+    handle.close();
+}
+
 fn main() {
     // Check if the app is already running
     let app_instance = SingleInstance::new(APP_ID).unwrap();
@@ -184,7 +216,7 @@ fn main() {
         kde_kwin_idle: None,
         is_active: Arc::new((Mutex::new(true), Condvar::new())),
         // TODO: Take this value from config file.
-        idle_timeout: std::time::Duration::from_secs(180),
+        idle_timeout: Duration::from_secs(180),
     };
 
     // Connect to Wayland server
@@ -220,7 +252,7 @@ fn main() {
 
         // Timer loop.
         loop {
-            std::thread::sleep(std::time::Duration::from_secs(pause_duration));
+            std::thread::sleep(Duration::from_secs(pause_duration));
             short_time_pased.add_assign(pause_duration);
             long_time_pased.add_assign(pause_duration);
 
@@ -228,13 +260,21 @@ fn main() {
 
             if *is_active_guard {
                 if long_time_pased >= long_break_timeout {
-                    // TODO: Notify user for long break.
+                    // TODO: Take these values from config file.
+                    show_break_notification(
+                        Duration::from_secs(420),
+                        notify_rust::Hint::SoundName("suspend-error".to_owned()), // Name or file
+                    );
 
                     // Reset timers.
                     long_time_pased = 0;
                     short_time_pased = 0;
                 } else if short_time_pased >= short_break_timeout {
-                    // TODO: Notify user for short break.
+                    // TODO: Take these values from config file.
+                    show_break_notification(
+                        Duration::from_secs(120),
+                        notify_rust::Hint::SoundName("suspend-error".to_owned()), // Name or file
+                    );
 
                     // Reset timer.
                     short_time_pased = 0;
