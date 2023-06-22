@@ -1,11 +1,10 @@
+extern crate gcd;
 extern crate notify_rust;
-extern crate primapalooza;
 extern crate single_instance;
 extern crate wayland_client;
 extern crate wayland_protocols;
 extern crate wayland_protocols_plasma;
 
-use primapalooza::greatest_common_factor;
 use single_instance::SingleInstance;
 use std::time::Duration;
 use std::{
@@ -242,10 +241,8 @@ fn main() {
         let short_break_timeout = 900; // secands
         let long_break_timeout = 3600; // secands
 
-        // Calculate GCF.
-        let pause_duration =
-            greatest_common_factor(short_break_timeout as usize, long_break_timeout as usize)
-                as u64; // secands
+        // Calculate GCD.
+        let pause_duration = gcd::binary_u64(short_break_timeout, long_break_timeout); // secands
 
         let mut short_time_pased = 0; // secands
         let mut long_time_pased = 0; // secands
