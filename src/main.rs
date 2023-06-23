@@ -23,7 +23,7 @@ struct State {
     idle_notifier: Option<ext_idle_notifier_v1::ExtIdleNotifierV1>,
     kde_kwin_idle: Option<org_kde_kwin_idle::OrgKdeKwinIdle>,
     is_active: Arc<(Mutex<bool>, Condvar)>,
-    idle_timeout: Duration,
+    idle_timeout: Arc<Duration>,
 }
 
 impl wayland_client::Dispatch<wl_registry::WlRegistry, ()> for State {
@@ -215,7 +215,7 @@ fn main() {
         kde_kwin_idle: None,
         is_active: Arc::new((Mutex::new(true), Condvar::new())),
         // TODO: Take this value from config file.
-        idle_timeout: Duration::from_secs(420),
+        idle_timeout: Arc::new(Duration::from_secs(420)),
     };
 
     // Connect to Wayland server
@@ -230,8 +230,9 @@ fn main() {
 
     event_queue.roundtrip(&mut state).unwrap();
 
-    // Thread safe clone.
+    // Thread safe clones.
     let is_active1 = Arc::clone(&state.is_active);
+    let idle_timeout1 = Arc::clone(&state.idle_timeout);
 
     // Timer thread.
     std::thread::spawn(move || {
@@ -241,8 +242,10 @@ fn main() {
         let short_break_timeout = 1200; // secands
         let long_break_timeout = 3840; // secands
 
-        // Calculate GCD.
-        let pause_duration = gcd::binary_u64(short_break_timeout, long_break_timeout); // secands
+        let pause_duration = std::cmp::min(
+            gcd::binary_u64(short_break_timeout, long_break_timeout), // Calculate GCD
+            idle_timeout1.as_secs() + 1, // Extra one second to make sure
+        ); // secands
 
         let mut short_time_pased = 0; // secands
         let mut long_time_pased = 0; // secands
