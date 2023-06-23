@@ -215,7 +215,7 @@ fn main() {
         kde_kwin_idle: None,
         is_active: Arc::new((Mutex::new(true), Condvar::new())),
         // TODO: Take this value from config file.
-        idle_timeout: Duration::from_secs(180),
+        idle_timeout: Duration::from_secs(420),
     };
 
     // Connect to Wayland server
@@ -238,8 +238,8 @@ fn main() {
         let (lock, cvar) = &*is_active1;
 
         // TODO: Take those values from config file.
-        let short_break_timeout = 900; // secands
-        let long_break_timeout = 3600; // secands
+        let short_break_timeout = 1200; // secands
+        let long_break_timeout = 3840; // secands
 
         // Calculate GCD.
         let pause_duration = gcd::binary_u64(short_break_timeout, long_break_timeout); // secands
