@@ -52,6 +52,8 @@ impl wayland_client::Dispatch<wl_registry::WlRegistry, ()> for State {
                             (),
                         ),
                     );
+
+                    eprintln!("Binded to ext_idle_notifier_v1")
                 }
                 "org_kde_kwin_idle" => {
                     state.kde_kwin_idle =
@@ -61,6 +63,8 @@ impl wayland_client::Dispatch<wl_registry::WlRegistry, ()> for State {
                             queue_handle,
                             (),
                         ));
+
+                    eprintln!("Binded to org_kde_kwin_idle")
                 }
                 _ => {}
             }
@@ -137,10 +141,14 @@ impl wayland_client::Dispatch<ext_idle_notification_v1::ExtIdleNotificationV1, (
             ext_idle_notification_v1::Event::Idled => {
                 *lock.lock().unwrap() = false;
                 cvar.notify_one();
+
+                eprintln!("Idled");
             }
             ext_idle_notification_v1::Event::Resumed => {
                 *lock.lock().unwrap() = true;
                 cvar.notify_one();
+
+                eprintln!("Resumed");
             }
             _ => {}
         }
@@ -162,10 +170,14 @@ impl wayland_client::Dispatch<org_kde_kwin_idle_timeout::OrgKdeKwinIdleTimeout, 
             org_kde_kwin_idle_timeout::Event::Idle => {
                 *lock.lock().unwrap() = false;
                 cvar.notify_one();
+
+                eprintln!("Idled");
             }
             org_kde_kwin_idle_timeout::Event::Resumed => {
                 *lock.lock().unwrap() = true;
                 cvar.notify_one();
+
+                eprintln!("Resumed");
             }
             _ => {}
         }
@@ -260,21 +272,29 @@ fn main() {
 
             if *is_active_guard {
                 if long_time_pased >= long_break_timeout {
+                    eprintln!("Long break starts");
+
                     // TODO: Take these values from config file.
                     show_break_notification(
                         Duration::from_secs(420),
                         notify_rust::Hint::SoundName("suspend-error".to_owned()), // Name or file
                     );
 
+                    eprintln!("Long break ends");
+
                     // Reset timers.
                     long_time_pased = 0;
                     short_time_pased = 0;
                 } else if short_time_pased >= short_break_timeout {
+                    eprintln!("Short break starts");
+
                     // TODO: Take these values from config file.
                     show_break_notification(
                         Duration::from_secs(120),
                         notify_rust::Hint::SoundName("suspend-error".to_owned()), // Name or file
                     );
+
+                    eprintln!("Short break ends");
 
                     // Reset timer.
                     short_time_pased = 0;
@@ -286,6 +306,8 @@ fn main() {
                 // Reset timers.
                 long_time_pased = 0;
                 short_time_pased = 0;
+
+                eprintln!("Timer resetted");
             }
         }
     });
