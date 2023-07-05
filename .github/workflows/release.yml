@@ -2,7 +2,9 @@
 # then it will build the binary and it will add it to the release assets
 # in a tar.gz archive along with other components.
 #
-# Reference: https://github.com/BurntSushi/ripgrep/blob/master/.github/workflows/release.yml
+# Reference:
+#   https://github.com/BurntSushi/ripgrep/blob/master/.github/workflows/release.yml
+#   https://github.com/rhino-linux/rhino-setup/blob/master/.github/workflows/package.yml
 
 name: release
 on:
@@ -53,19 +55,23 @@ jobs:
           toolchain: ${{ matrix.rust }}
           target: ${{ matrix.target }}
 
-      - name: Build Binary
-        run: cargo build --verbose --release
+      - name: Install system deps
+        shell: bash
+        run: sudo apt update && sudo apt install libdbus-1-dev desktop-file-utils rustc cargo meson ninja-build -y
 
-      - name: Build Archive
+      - name: Setup
+        run: meson build
+
+      - name: Build
+        run: DESTDIR="builds/${{ matrix.target }}" meson install -C build
+
+      - name: Create Archive
         shell: bash
         run: |
-          staging="ianny-${{ needs.create-release.outputs.version }}-${{ matrix.target }}"
+          archive="ianny-${{ needs.create-release.outputs.version }}-${{ matrix.target }}.tar.gz"
 
-          cp {README.md,LICENSE,CHANGELOG.md,io.github.zer0_x.ianny.desktop} "$staging/"
-          cp "target/release/ianny" "$staging/"
-
-          tar czf "$staging.tar.gz" "$staging"
-          echo "ASSET=$staging.tar.gz" >> $GITHUB_ENV
+          tar czf "$archive" "build/builds/${{ matrix.target }}/"
+          echo "ASSET=$archive" >> $GITHUB_ENV
 
       - name: Upload Release Archive
         uses: actions/upload-release-asset@v1
