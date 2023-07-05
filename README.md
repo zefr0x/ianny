@@ -9,7 +9,7 @@ Simple, light-weight, easy to use, and effective [Linux](https://en.wikipedia.or
 ## Features
 
 - ⚙ Simple config to tweak application behavior. `[WIP]`
-- 🚀 Auto start it with your desktop environment. `[WIP]`
+- 🚀 Auto start it with your desktop environment.
 - 🚫 [X11](https://en.wikipedia.org/wiki/X_Window_System) is not supported.
 - 🚫 Microsoft Windows is definitely not supported.
 
@@ -29,7 +29,7 @@ You can find the latest Github release [here](https://github.com/zer0-x/ianny/re
 ## Build
 
 > **Note**
-> You need to have [`cargo`](https://doc.rust-lang.org/cargo/) installed in you system.
+> You need to have [`cargo`](https://doc.rust-lang.org/cargo/), [`meson`](https://mesonbuild.com/) and [`libdbus-1-dev`](https://www.freedesktop.org/wiki/Software/dbus/) installed in you system.
 
 ```shell
 git clone https://github.com/zer0-x/ianny.git
@@ -39,10 +39,16 @@ cd ianny
 # Checkout to a release tag e.g. v1.0.1
 git checkout vx.x.x
 
-cargo build --release
+meson build
+meson compile -C build
 ```
 
-You will find the binary in `./target/release/ianny`
+You will find the binary in `./build/src/ianny`
+
+To install:
+```shell
+meson install -C build
+```
 
 ## Q&A
 
