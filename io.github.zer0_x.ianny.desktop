@@ -2,11 +2,12 @@
 Version=1.5
 Type=Application
 Name=Ianny
+GenericName=Break Notifier
 Comment=Help preventing repetitive strain injuries by keeping track of usage patterns and periodically informing user to take breaks.
-GenericName=Eye Protector
 Exec=ianny
-SingleMainWindow=true
+NoDisplay=true
 Terminal=false
+SingleMainWindow=true
 Categories=Utility
 Keywords=RSI;eye;
 X-GNOME-Autostart-enabled=true
