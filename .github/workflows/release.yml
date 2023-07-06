@@ -55,22 +55,22 @@ jobs:
           toolchain: ${{ matrix.rust }}
           target: ${{ matrix.target }}
 
-      - name: Install system deps
+      - name: Install System Deps
         shell: bash
-        run: sudo apt update && sudo apt install libdbus-1-dev desktop-file-utils rustc cargo meson ninja-build -y
+        run: sudo apt install libdbus-1-dev desktop-file-utils meson -y
 
       - name: Setup
         run: meson build
 
       - name: Build
-        run: DESTDIR="builds/${{ matrix.target }}" meson install -C build
+        run: meson install -C build --destdir "builds/${{ matrix.target }}"
 
       - name: Create Archive
         shell: bash
         run: |
           archive="ianny-${{ needs.create-release.outputs.version }}-${{ matrix.target }}.tar.gz"
 
-          tar czf "$archive" "build/builds/${{ matrix.target }}/"
+          tar -C "build/builds/" --create "${{ matrix.target }}/" --gzip --file "$archive"
           echo "ASSET=$archive" >> $GITHUB_ENV
 
       - name: Upload Release Archive
