@@ -2,6 +2,8 @@
 
 <h1>Ianny | عَيْنِي</h1>
 
+[![release](https://github.com/zer0-x/ianny/actions/workflows/release.yml/badge.svg)](https://github.com/zer0-x/ianny/actions/workflows/release.yml)
+
 Simple, light-weight, easy to use, and effective [Linux](https://en.wikipedia.org/wiki/Linux) [Wayland](https://en.wikipedia.org/wiki/Wayland_(protocol)) desktop utility helps preventing [repetitive strain injuries](https://en.wikipedia.org/wiki/Repetitive_strain_injury) by keeping track of usage patterns and periodically informing user to take breaks.
 
 </div>
