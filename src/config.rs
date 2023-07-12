@@ -4,6 +4,7 @@ extern crate xdg;
 
 use std::path::PathBuf;
 
+// TODO: Separate timer config in a group before new release.
 #[derive(Debug, serde::Deserialize)]
 pub struct Config {
     #[serde(default = "default_idle_timeout")]

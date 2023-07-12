@@ -10,7 +10,7 @@ Simple, light-weight, easy to use, and effective [Linux](https://en.wikipedia.or
 
 ## Features
 
-- ⚙ Simple config to tweak application behavior.
+- ⚙ Simple config to tweak it's behavior.
 - 🚀 Auto start it with your desktop environment.
 - 🚫 [X11](https://en.wikipedia.org/wiki/X_Window_System) is not supported.
 - 🚫 Microsoft Windows is definitely not supported.
@@ -51,6 +51,27 @@ To install:
 ```shell
 meson install -C build
 ```
+
+# Usage
+
+You just need to execute the binary eather direcrly or by enabling it to auto-start with your desktop environment's settings, since it provides a `.desktop` file for auto-start.
+
+# Config
+
+The defaults might not fit your needs, so you can change them via a config file.
+
+The config file is `$XDG_CONFIG_HOME/io.github.zer0_x.ianny/config.toml` or by default `~/.config/io.github.zer0_x.ianny/config.toml`. Just create it and specify the options you need with the [toml format](https://toml.io/):
+
+```toml
+idle_timeout = 7
+short_break_timeout = 20
+long_break_tiemout = 64
+short_break_duration = 2
+long_break_duration = 7
+```
+
+> **Note**
+> Time specified in minutes
 
 ## Q&A
 
