@@ -9,18 +9,20 @@ homepage = "https://github.com/zer0-x/ianny"
 repository = "https://github.com/zer0-x/ianny"
 license = "GPL-3.0"
 build = "build.rs"
-
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [profile.release]
 strip = true
 
 [dependencies]
+gcd = "2.3.0"
+notify-rust = { version = "4.8.0", default-features = false, features = ["d"] }
+serde = { version = "1.0.171", features = ["derive"] }
+single-instance = "0.3.3"
+toml = "0.7.6"
 wayland-client = "0.30.2"
 wayland-protocols = { version = "0.30.0", features = ["client", "staging"] }
 wayland-protocols-plasma = { version = "0.1.0", features = ["client"] }
-single-instance = "0.3.3"
-gcd = "2.3.0"
-notify-rust = { version = "4.8.0", default-features = false, features = ["d"] }
+xdg = "2.5.0"
 
 [build-dependencies]

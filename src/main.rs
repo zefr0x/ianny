@@ -5,6 +5,8 @@ extern crate wayland_client;
 extern crate wayland_protocols;
 extern crate wayland_protocols_plasma;
 
+mod config;
+
 use single_instance::SingleInstance;
 use std::time::Duration;
 use std::{
@@ -222,12 +224,17 @@ fn main() {
         std::process::exit(1);
     }
 
+    // Load config file
+    let user_config = config::load_config(config::get_config_file());
+
+    eprintln!("{:?}", &user_config);
+
+    // Create main state for the app to store shared things.
     let mut state = State {
         idle_notifier: None,
         kde_kwin_idle: None,
         is_active: Arc::new((Mutex::new(true), Condvar::new())),
-        // TODO: Take this value from config file.
-        idle_timeout: Arc::new(Duration::from_secs(420)),
+        idle_timeout: Arc::new(Duration::from_secs(&user_config.idle_timeout * 60)),
     };
 
     // Connect to Wayland server
@@ -250,9 +257,8 @@ fn main() {
     std::thread::spawn(move || {
         let (lock, cvar) = &*is_active1;
 
-        // TODO: Take those values from config file.
-        let short_break_timeout = 1200; // secands
-        let long_break_timeout = 3840; // secands
+        let short_break_timeout = &user_config.short_break_timeout * 60; // secands
+        let long_break_timeout = &user_config.long_break_tiemout * 60; // secands
 
         let pause_duration = std::cmp::min(
             gcd::binary_u64(short_break_timeout, long_break_timeout), // Calculate GCD
@@ -274,9 +280,8 @@ fn main() {
                 if long_time_pased >= long_break_timeout {
                     eprintln!("Long break starts");
 
-                    // TODO: Take these values from config file.
                     show_break_notification(
-                        Duration::from_secs(420),
+                        Duration::from_secs(&user_config.long_break_duration * 60),
                         notify_rust::Hint::SoundName("suspend-error".to_owned()), // Name or file
                     );
 
@@ -288,9 +293,8 @@ fn main() {
                 } else if short_time_pased >= short_break_timeout {
                     eprintln!("Short break starts");
 
-                    // TODO: Take these values from config file.
                     show_break_notification(
-                        Duration::from_secs(120),
+                        Duration::from_secs(&user_config.short_break_duration * 60),
                         notify_rust::Hint::SoundName("suspend-error".to_owned()), // Name or file
                     );
 

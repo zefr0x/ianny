@@ -10,7 +10,7 @@ Simple, light-weight, easy to use, and effective [Linux](https://en.wikipedia.or
 
 ## Features
 
-- ⚙ Simple config to tweak application behavior. `[WIP]`
+- ⚙ Simple config to tweak application behavior.
 - 🚀 Auto start it with your desktop environment.
 - 🚫 [X11](https://en.wikipedia.org/wiki/X_Window_System) is not supported.
 - 🚫 Microsoft Windows is definitely not supported.
