@@ -19,7 +19,7 @@ use wayland_protocols::ext::idle_notify::v1::client::{
 };
 use wayland_protocols_plasma::idle::client::{org_kde_kwin_idle, org_kde_kwin_idle_timeout};
 
-const APP_ID: &str = "io.github.zer0_x.ianny";
+const APP_ID: &str = "io.github.zefr0x.ianny";
 
 struct State {
     idle_notifier: Option<ext_idle_notifier_v1::ExtIdleNotifierV1>,

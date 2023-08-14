@@ -1,12 +1,12 @@
 [package]
 name = "ianny"
 version = "0.1.0-alpha.0"
-authors = ["zer0-x"]
+authors = ["zefr0x"]
 edition = "2021"
 description = "Desktop utility that helps preventing repetitive strain injuries by keeping track of usage patterns and periodically informing user to take breaks"
 readme = "README.md"
-homepage = "https://github.com/zer0-x/ianny"
-repository = "https://github.com/zer0-x/ianny"
+homepage = "https://github.com/zefr0x/ianny"
+repository = "https://github.com/zefr0x/ianny"
 license = "GPL-3.0"
 build = "build.rs"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html

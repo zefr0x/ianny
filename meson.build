@@ -3,7 +3,7 @@ project('ianny', 'rust',
   license : 'GPL3',
   default_options : ['warning_level=2'])
 
-application_id = 'io.github.zer0_x.ianny'
+application_id = 'io.github.zefr0x.ianny'
 
 # Get options
 profile = get_option('profile')

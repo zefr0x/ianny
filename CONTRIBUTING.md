@@ -2,7 +2,7 @@
 
 ## Bug report
 
-For now [GitHub Bug Traker](https://github.com/zer0-x/ianny/issues) is used for this project.
+For now [GitHub Bug Traker](https://github.com/zefr0x/ianny/issues) is used for this project.
 
 ## Development
 
