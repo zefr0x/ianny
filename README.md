@@ -63,6 +63,7 @@ The defaults might not fit your needs, so you can change them via a config file.
 The config file is `$XDG_CONFIG_HOME/io.github.zer0_x.ianny/config.toml` or by default `~/.config/io.github.zer0_x.ianny/config.toml`. Just create it and specify the options you need with the [toml format](https://toml.io/):
 
 ```toml
+[timer]
 idle_timeout = 7
 short_break_timeout = 20
 long_break_tiemout = 64

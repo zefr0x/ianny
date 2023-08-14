@@ -234,7 +234,7 @@ fn main() {
         idle_notifier: None,
         kde_kwin_idle: None,
         is_active: Arc::new((Mutex::new(true), Condvar::new())),
-        idle_timeout: Arc::new(Duration::from_secs(&user_config.idle_timeout * 60)),
+        idle_timeout: Arc::new(Duration::from_secs(&user_config.timer.idle_timeout * 60)),
     };
 
     // Connect to Wayland server
@@ -257,8 +257,8 @@ fn main() {
     std::thread::spawn(move || {
         let (lock, cvar) = &*is_active1;
 
-        let short_break_timeout = &user_config.short_break_timeout * 60; // secands
-        let long_break_timeout = &user_config.long_break_tiemout * 60; // secands
+        let short_break_timeout = &user_config.timer.short_break_timeout * 60; // secands
+        let long_break_timeout = &user_config.timer.long_break_tiemout * 60; // secands
 
         let pause_duration = std::cmp::min(
             gcd::binary_u64(short_break_timeout, long_break_timeout), // Calculate GCD
@@ -267,6 +267,8 @@ fn main() {
 
         let mut short_time_pased = 0; // secands
         let mut long_time_pased = 0; // secands
+
+        // TODO: Handle separate idle timeout for both long and short timers.
 
         // Timer loop.
         loop {
@@ -281,7 +283,7 @@ fn main() {
                     eprintln!("Long break starts");
 
                     show_break_notification(
-                        Duration::from_secs(&user_config.long_break_duration * 60),
+                        Duration::from_secs(&user_config.timer.long_break_duration * 60),
                         notify_rust::Hint::SoundName("suspend-error".to_owned()), // Name or file
                     );
 
@@ -294,7 +296,7 @@ fn main() {
                     eprintln!("Short break starts");
 
                     show_break_notification(
-                        Duration::from_secs(&user_config.short_break_duration * 60),
+                        Duration::from_secs(&user_config.timer.short_break_duration * 60),
                         notify_rust::Hint::SoundName("suspend-error".to_owned()), // Name or file
                     );
 

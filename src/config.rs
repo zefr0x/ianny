@@ -4,9 +4,14 @@ extern crate xdg;
 
 use std::path::PathBuf;
 
-// TODO: Separate timer config in a group before new release.
 #[derive(Debug, serde::Deserialize)]
 pub struct Config {
+    #[serde(default = "default_timer")]
+    pub timer: Timer,
+}
+
+#[derive(Debug, serde::Deserialize)]
+pub struct Timer {
     #[serde(default = "default_idle_timeout")]
     pub idle_timeout: u64, // Minutes
     #[serde(default = "default_short_break_timeout")]
@@ -17,6 +22,16 @@ pub struct Config {
     pub short_break_duration: u64, // Minutes
     #[serde(default = "default_long_break_duration")]
     pub long_break_duration: u64, // Minutes
+}
+
+fn default_timer() -> Timer {
+    Timer {
+        idle_timeout: default_idle_timeout(),
+        short_break_timeout: default_short_break_timeout(),
+        long_break_tiemout: default_long_break_tiemout(),
+        short_break_duration: default_short_break_duration(),
+        long_break_duration: default_long_break_duration(),
+    }
 }
 
 fn default_idle_timeout() -> u64 {
