@@ -4,7 +4,7 @@
 
 [![release](https://github.com/zefr0x/ianny/actions/workflows/release.yml/badge.svg)](https://github.com/zefr0x/ianny/actions/workflows/release.yml)
 
-Simple, light-weight, easy to use, and effective [Linux](https://en.wikipedia.org/wiki/Linux) [Wayland](https://en.wikipedia.org/wiki/Wayland_(protocol)) desktop utility helps preventing [repetitive strain injuries](https://en.wikipedia.org/wiki/Repetitive_strain_injury) by keeping track of usage patterns and periodically informing user to take breaks.
+Simple, light-weight, easy to use, and effective [Linux](https://en.wikipedia.org/wiki/Linux) [Wayland](<https://en.wikipedia.org/wiki/Wayland_(protocol)>) desktop utility helps preventing [repetitive strain injuries](https://en.wikipedia.org/wiki/Repetitive_strain_injury) by keeping track of usage patterns and periodically informing user to take breaks.
 
 </div>
 
@@ -17,15 +17,18 @@ Simple, light-weight, easy to use, and effective [Linux](https://en.wikipedia.or
 
 ## Requirements
 
-- [Wayland Compositor](https://en.wikipedia.org/wiki/Wayland_(protocol)#Wayland_compositors)
+- [Wayland Compositor](<https://en.wikipedia.org/wiki/Wayland_(protocol)#Wayland_compositors>)
 - [Notification Daemon](https://wiki.archlinux.org/title/Desktop_notifications#Notification_servers) that implements [`org.freedesktop.Notifications`](https://specifications.freedesktop.org/notification-spec/notification-spec-latest.html)
 - [libdbus-1.so](https://www.freedesktop.org/wiki/Software/dbus/) installed in your system
 
 ## Installation
 
-## AUR
+### AUR
+
+TODO...
 
 ### Download Binary From Github
+
 For every new release a Github workflow will build a binary in Github servers and will upload it as a release asset in Github releases.
 
 You can find the latest Github release [here](https://github.com/zefr0x/ianny/releases/latest) or the releases page [here](https://github.com/zefr0x/ianny/releases).
@@ -50,6 +53,7 @@ meson compile -C build
 You will find the binary in `./build/src/ianny`
 
 To install:
+
 ```shell
 meson install -C build
 ```
@@ -79,6 +83,7 @@ long_break_duration = 7
 ## Q&A
 
 Q: What does `Ianny` mean?
+
 - It is an Arabic word `عَيْنِي` that could be translated to `My Eye` in english.
 
 ## Inspired by
