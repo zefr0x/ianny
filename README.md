@@ -4,6 +4,8 @@
 
 [![release](https://github.com/zefr0x/ianny/actions/workflows/release.yml/badge.svg)](https://github.com/zefr0x/ianny/actions/workflows/release.yml)
 
+[![AUR votes](https://img.shields.io/aur/votes/ianny-git?label=AUR%20votes)](https://aur.archlinux.org/packages/ianny-git)
+
 Simple, light-weight, easy to use, and effective [Linux](https://en.wikipedia.org/wiki/Linux) [Wayland](<https://en.wikipedia.org/wiki/Wayland_(protocol)>) desktop utility helps preventing [repetitive strain injuries](https://en.wikipedia.org/wiki/Repetitive_strain_injury) by keeping track of usage patterns and periodically informing user to take breaks.
 
 </div>
@@ -23,9 +25,19 @@ Simple, light-weight, easy to use, and effective [Linux](https://en.wikipedia.or
 
 ## Installation
 
-### AUR
+### [AUR](https://aur.archlinux.org/packages/ianny-git)
 
-TODO...
+[![AUR last modified](https://img.shields.io/aur/last-modified/ianny-git)](https://aur.archlinux.org/cgit/aur.git/log/?h=ianny-git)
+
+#### Using yay
+```shell
+yay -Sa ianny-git
+```
+
+#### Using paru
+```shell
+paru -Sa ianny-git
+```
 
 ### Download Binary From Github
 
