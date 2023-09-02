@@ -258,7 +258,7 @@ fn main() {
         let (lock, cvar) = &*is_active1;
 
         let short_break_timeout = &user_config.timer.short_break_timeout * 60; // secands
-        let long_break_timeout = &user_config.timer.long_break_tiemout * 60; // secands
+        let long_break_timeout = &user_config.timer.long_break_timeout * 60; // secands
 
         let pause_duration = std::cmp::min(
             gcd::binary_u64(short_break_timeout, long_break_timeout), // Calculate GCD

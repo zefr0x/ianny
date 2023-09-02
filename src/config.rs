@@ -16,8 +16,8 @@ pub struct Timer {
     pub idle_timeout: u64, // Minutes
     #[serde(default = "default_short_break_timeout")]
     pub short_break_timeout: u64, // Minutes
-    #[serde(default = "default_long_break_tiemout")]
-    pub long_break_tiemout: u64, // Minutes
+    #[serde(default = "default_long_break_timeout")]
+    pub long_break_timeout: u64, // Minutes
     #[serde(default = "default_short_break_duration")]
     pub short_break_duration: u64, // Minutes
     #[serde(default = "default_long_break_duration")]
@@ -28,7 +28,7 @@ fn default_timer() -> Timer {
     Timer {
         idle_timeout: default_idle_timeout(),
         short_break_timeout: default_short_break_timeout(),
-        long_break_tiemout: default_long_break_tiemout(),
+        long_break_timeout: default_long_break_timeout(),
         short_break_duration: default_short_break_duration(),
         long_break_duration: default_long_break_duration(),
     }
@@ -42,7 +42,7 @@ fn default_short_break_timeout() -> u64 {
     20 // Minutes
 }
 
-fn default_long_break_tiemout() -> u64 {
+fn default_long_break_timeout() -> u64 {
     64 // Minutes
 }
 
