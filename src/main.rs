@@ -1,13 +1,14 @@
 extern crate gcd;
+extern crate gettextrs;
 extern crate notify_rust;
 extern crate single_instance;
 extern crate wayland_client;
 extern crate wayland_protocols;
 extern crate wayland_protocols_plasma;
 
-mod config;
-
+use gettextrs::{gettext, ngettext};
 use single_instance::SingleInstance;
+use std::env;
 use std::time::Duration;
 use std::{
     ops::AddAssign,
@@ -18,6 +19,8 @@ use wayland_protocols::ext::idle_notify::v1::client::{
     ext_idle_notification_v1, ext_idle_notifier_v1,
 };
 use wayland_protocols_plasma::idle::client::{org_kde_kwin_idle, org_kde_kwin_idle_timeout};
+
+mod config;
 
 const APP_ID: &str = "io.github.zefr0x.ianny";
 
@@ -45,6 +48,7 @@ impl wayland_client::Dispatch<wl_registry::WlRegistry, ()> for State {
                 "wl_seat" => {
                     registry.bind::<wl_seat::WlSeat, _, _>(name, 1, queue_handle, ());
                 }
+                // TODO: Only bind to this if both are supported by the compositor.
                 "ext_idle_notifier_v1" => {
                     state.idle_notifier = Some(
                         registry.bind::<ext_idle_notifier_v1::ExtIdleNotifierV1, _, _>(
@@ -190,14 +194,15 @@ fn show_break_notification(break_time: Duration, notification_sound_hint: notify
     use notify_rust::{Hint, Notification, Timeout, Urgency};
 
     let mut handle = Notification::new()
-        // TODO: Localize messages and adapt words with number.
-        .summary("Break Time!")
-        .body(&format!(
-            "Take a break for <b>{} minutes</b>.",
-            break_time.as_secs() / 60
+        .summary(&gettext("Break Time!"))
+        .body(&ngettext!(
+            "Take a break for <b>{} minute</b>",
+            "Take a break for <b>{} minutes</b>",
+            (break_time.as_secs() / 60) as u32,
+            (break_time.as_secs() / 60)
         ))
         .icon(APP_ID)
-        .appname("Ianny")
+        .appname(&gettext("Ianny"))
         .hint(notification_sound_hint)
         .hint(Hint::Urgency(Urgency::Critical))
         .hint(Hint::Resident(true))
@@ -223,6 +228,22 @@ fn main() {
         eprintln!("{APP_ID} is already running.");
         std::process::exit(1);
     }
+
+    // Find and load locale
+    let app_lang = gettextrs::setlocale(
+        gettextrs::LocaleCategory::LcAll,
+        env::var("LC_ALL").unwrap_or_else(|_| {
+            env::var("LC_CTYPE")
+                .unwrap_or_else(|_| env::var("LANG").unwrap_or_else(|_| "en_US.UTF-8".to_owned()))
+        }),
+    )
+    .expect("Failed to set locale, please use a valid system locale and make sure it's enabled.");
+    gettextrs::textdomain(APP_ID).unwrap();
+    // FIX: Also support /usr/local/share/locale/
+    gettextrs::bindtextdomain(APP_ID, "/usr/share/locale").unwrap();
+    gettextrs::bind_textdomain_codeset(APP_ID, "UTF-8").unwrap();
+
+    eprintln!("Application locale: {}", String::from_utf8_lossy(&app_lang));
 
     // Load config file
     let user_config = config::load_config(config::get_config_file());

@@ -16,6 +16,7 @@ strip = true
 
 [dependencies]
 gcd = "2.3.0"
+gettext-rs = "0.7.0"
 notify-rust = { version = "4.8.0", default-features = false, features = ["d"] }
 serde = { version = "1.0.183", features = ["derive"] }
 single-instance = "0.3.3"

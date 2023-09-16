@@ -35,6 +35,7 @@ summary({
 
 # Other meson.build files
 subdir('src/')
+subdir('po/')
 
 
 # Install .desktop files

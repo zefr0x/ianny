@@ -1,0 +1,30 @@
+# This file is distributed under the same license as the Ianny package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Ianny VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-09-15 23:35+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: src/main.rs:198
+msgid "Break Time!"
+msgstr ""
+
+#: src/main.rs:200
+msgid "Take a break for <b>{} minute</b>"
+msgid_plural "Take a break for <b>{} minutes</b>"
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/main.rs:206
+msgid "Ianny"
+msgstr ""
