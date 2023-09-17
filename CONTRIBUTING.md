@@ -31,5 +31,17 @@ Then add it as a git hook while you are inside the repository:
 pre-commit install
 ```
 
-<!-- TODO:  -->
-<!-- # Translation -->
+# Translation
+
+We use `gettext` in this project, you have `.po` files to translate and a `.desktop` file.
+
+## Files to Translate
+
+- `po/<language_id>.po`
+- `io.github.zefr0x.ianny.desktop`
+
+## Adding New Language
+
+1. Copy `po/io.github.zefr0x.ianny.pot` to `po/<language_id>.po`.
+2. Add the language ID to the `po/LINGUAS` file (IDs are separated by space).
+3. Start editing the `.po` file using any editor you want to use (e.g. [`Poedit`](https://poedit.net/)).
