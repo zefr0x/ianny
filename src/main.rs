@@ -193,14 +193,34 @@ impl wayland_client::Dispatch<org_kde_kwin_idle_timeout::OrgKdeKwinIdleTimeout, 
 fn show_break_notification(break_time: Duration, notification_sound_hint: notify_rust::Hint) {
     use notify_rust::{Hint, Notification, Timeout, Urgency};
 
+    let minutes = break_time.as_secs() / 60;
+    let seconds = break_time.as_secs() % 60;
+
+    let mut message = gettext("Take a break for");
+
+    if minutes != 0 {
+        message += &ngettext!(
+            " <b>{} minute</b>",
+            " <b>{} minutes</b>",
+            minutes as u32,
+            minutes
+        );
+    }
+    if minutes != 0 && seconds != 0 {
+        message += &gettext(" and");
+    }
+    if seconds != 0 {
+        message += &ngettext!(
+            " <b>{} second</b>",
+            " <b>{} seconds</b>",
+            seconds as u32,
+            seconds
+        )
+    };
+
     let mut handle = Notification::new()
         .summary(&gettext("Break Time!"))
-        .body(&ngettext!(
-            "Take a break for <b>{} minute</b>",
-            "Take a break for <b>{} minutes</b>",
-            (break_time.as_secs() / 60) as u32,
-            (break_time.as_secs() / 60)
-        ))
+        .body(&message)
         .icon(APP_ID)
         .appname(&gettext("Ianny"))
         .hint(notification_sound_hint)
@@ -255,7 +275,7 @@ fn main() {
         idle_notifier: None,
         kde_kwin_idle: None,
         is_active: Arc::new((Mutex::new(true), Condvar::new())),
-        idle_timeout: Arc::new(Duration::from_secs(&user_config.timer.idle_timeout * 60)),
+        idle_timeout: Arc::new(Duration::from_secs(user_config.timer.idle_timeout)),
     };
 
     // Connect to Wayland server
@@ -278,11 +298,11 @@ fn main() {
     std::thread::spawn(move || {
         let (lock, cvar) = &*is_active1;
 
-        let short_break_timeout = &user_config.timer.short_break_timeout * 60; // secands
-        let long_break_timeout = &user_config.timer.long_break_timeout * 60; // secands
-
         let pause_duration = std::cmp::min(
-            gcd::binary_u64(short_break_timeout, long_break_timeout), // Calculate GCD
+            gcd::binary_u64(
+                user_config.timer.short_break_timeout,
+                user_config.timer.long_break_timeout,
+            ), // Calculate GCD
             idle_timeout1.as_secs() + 1, // Extra one second to make sure
         ); // secands
 
@@ -300,11 +320,11 @@ fn main() {
             let is_active_guard = lock.lock().unwrap();
 
             if *is_active_guard {
-                if long_time_pased >= long_break_timeout {
+                if long_time_pased >= user_config.timer.long_break_timeout {
                     eprintln!("Long break starts");
 
                     show_break_notification(
-                        Duration::from_secs(&user_config.timer.long_break_duration * 60),
+                        Duration::from_secs(user_config.timer.long_break_duration),
                         notify_rust::Hint::SoundName("suspend-error".to_owned()), // Name or file
                     );
 
@@ -313,11 +333,11 @@ fn main() {
                     // Reset timers.
                     long_time_pased = 0;
                     short_time_pased = 0;
-                } else if short_time_pased >= short_break_timeout {
+                } else if short_time_pased >= user_config.timer.short_break_timeout {
                     eprintln!("Short break starts");
 
                     show_break_notification(
-                        Duration::from_secs(&user_config.timer.short_break_duration * 60),
+                        Duration::from_secs(user_config.timer.short_break_duration),
                         notify_rust::Hint::SoundName("suspend-error".to_owned()), // Name or file
                     );
 

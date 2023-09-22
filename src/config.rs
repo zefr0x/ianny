@@ -13,15 +13,15 @@ pub struct Config {
 #[derive(Debug, serde::Deserialize)]
 pub struct Timer {
     #[serde(default = "default_idle_timeout")]
-    pub idle_timeout: u64, // Minutes
+    pub idle_timeout: u64, // Seconds
     #[serde(default = "default_short_break_timeout")]
-    pub short_break_timeout: u64, // Minutes
+    pub short_break_timeout: u64, // Seconds
     #[serde(default = "default_long_break_timeout")]
-    pub long_break_timeout: u64, // Minutes
+    pub long_break_timeout: u64, // Seconds
     #[serde(default = "default_short_break_duration")]
-    pub short_break_duration: u64, // Minutes
+    pub short_break_duration: u64, // Seconds
     #[serde(default = "default_long_break_duration")]
-    pub long_break_duration: u64, // Minutes
+    pub long_break_duration: u64, // Seconds
 }
 
 fn default_timer() -> Timer {
@@ -35,23 +35,23 @@ fn default_timer() -> Timer {
 }
 
 fn default_idle_timeout() -> u64 {
-    7 // Minutes
+    240 // Seconds (7 minutes)
 }
 
 fn default_short_break_timeout() -> u64 {
-    20 // Minutes
+    1200 // Seconds (20 minutes)
 }
 
 fn default_long_break_timeout() -> u64 {
-    64 // Minutes
+    3840 // Seconds (64 minutes)
 }
 
 fn default_short_break_duration() -> u64 {
-    2 // Minutes
+    120 // Seconds (2 minutes)
 }
 
 fn default_long_break_duration() -> u64 {
-    7 // Minutes
+    240 // Seconds (7 minutes)
 }
 
 pub fn get_config_file() -> PathBuf {

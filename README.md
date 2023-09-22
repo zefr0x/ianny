@@ -82,15 +82,15 @@ The config file is `$XDG_CONFIG_HOME/io.github.zefr0x.ianny/config.toml` or by d
 
 ```toml
 [timer]
-idle_timeout = 7
-short_break_timeout = 20
-long_break_timeout = 64
-short_break_duration = 2
-long_break_duration = 7
+idle_timeout = 240
+short_break_timeout = 1200
+long_break_timeout = 3840
+short_break_duration = 120
+long_break_duration = 240
 ```
 
 > **Note**
-> Time specified in minutes
+> Time specified in seconds
 
 ## Q&A
 

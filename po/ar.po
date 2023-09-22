@@ -5,8 +5,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Ianny VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-09-15 23:35+0000\n"
-"PO-Revision-Date: 2023-09-16 02:48+0300\n"
+"POT-Creation-Date: 2023-09-23 08:57+0000\n"
+"PO-Revision-Date: 2023-09-23 23:21+0300\n"
 "Last-Translator: zefr0x\n"
 "Language-Team: \n"
 "Language: ar\n"
@@ -17,20 +17,38 @@ msgstr ""
 "&& n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5);\n"
 "X-Generator: Poedit 3.3.2\n"
 
-#: src/main.rs:198
+#: src/main.rs:199
+msgid "Take a break for"
+msgstr "خُذ اِستِراحَةً لِمُدَّةِ"
+
+#: src/main.rs:203
+msgid " <b>{} minute</b>"
+msgid_plural " <b>{} minutes</b>"
+msgstr[0] " <b>لَحظَة ({}د)</b>"
+msgstr[1] " <b>دَقِيقَةٍ وَاحِدَة ({}د)</b>"
+msgstr[2] " <b>دَقِيقَتانِ اِثنَتان ({}د)</b>"
+msgstr[3] " <b>{} دَقِائِق</b>"
+msgstr[4] " <b>{} دَقِيقَة</b>"
+msgstr[5] " <b>{} دَقِيقَة</b>"
+
+#: src/main.rs:210
+msgid " and"
+msgstr " وَ"
+
+#: src/main.rs:214
+msgid " <b>{} second</b>"
+msgid_plural " <b>{} seconds</b>"
+msgstr[0] " <b>لَحظَة ({}ث)</b>"
+msgstr[1] " <b>ثَانِيَةٌ وَاحِدَة ({}د)</b>"
+msgstr[2] " <b>ثَانِيَتَانِ اِثنَتان ({}د)</b>"
+msgstr[3] " <b>{} ثَوانِي</b>"
+msgstr[4] " <b>{} ثَانِيَة</b>"
+msgstr[5] " <b>{} ثَانِيَة</b>"
+
+#: src/main.rs:222
 msgid "Break Time!"
 msgstr "وَقتُ اِستِراحَة!"
 
-#: src/main.rs:200
-msgid "Take a break for <b>{} minute</b>"
-msgid_plural "Take a break for <b>{} minutes</b>"
-msgstr[0] "خُذ اِستِراحَة <b>({}د)</b>"
-msgstr[1] "خُذ اِستِراحَةً لِمُدَّةِ <b>دَقِيقَةٍ وَاحِدَة ({}د)</b>"
-msgstr[2] "خُذ اِستِراحَةً لِمُدَّةِ <b>دَقِيقَتانِ اِثنَتان ({}د)</b>"
-msgstr[3] "خُذ اِستِراحَةً لِمُدَّةِ <b>{} دَقِائِق</b>"
-msgstr[4] "خُذ اِستِراحَةً لِمُدَّةِ <b>{} دَقِيقَة</b>"
-msgstr[5] "خُذ اِستِراحَةً لِمُدَّةِ <b>{} دَقِيقَة</b>"
-
-#: src/main.rs:206
+#: src/main.rs:225
 msgid "Ianny"
 msgstr "عَيْنِي"
