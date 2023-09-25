@@ -2,12 +2,16 @@
 Version=1.5
 Type=Application
 Name=Ianny
+Name[ar]=عَيْنِي
 GenericName=Break Notifier
+GenericName[ar]=مُنَبِّهُ اِستِرَاحَة
 Comment=Help preventing repetitive strain injuries by keeping track of usage patterns and periodically informing user to take breaks.
+Comment[ar]=يُساعِدُ فِي تَجَنُّبِ إصَابَاتِ الإجهَادِ المُتَكَرِّرِ مِن خِلَالِ تَتَبُّعِ أنمَاطِ الاِستِخدَامِ وَتَذكِيِرِ المُستَخدِمِ بِشَكلٍ دَورِيٍّ لِأخذِ اِستِرَاحَات
 Exec=ianny
 NoDisplay=true
 Terminal=false
 SingleMainWindow=true
 Categories=Utility
-Keywords=RSI;eye;
+Keywords=RSI;eye;break;
+Keywords[ar]=إجهاد;عين;استراحة;
 X-GNOME-Autostart-enabled=true
