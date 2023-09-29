@@ -57,7 +57,7 @@ jobs:
 
       - name: Install System Deps
         shell: bash
-        run: sudo apt install libdbus-1-dev desktop-file-utils meson -y
+        run: sudo apt install libdbus-1-dev desktop-file-utils gettext meson -y
 
       - name: Setup
         run: meson build
