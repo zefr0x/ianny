@@ -266,7 +266,7 @@ fn main() {
     eprintln!("Application locale: {}", String::from_utf8_lossy(&app_lang));
 
     // Load config file
-    let user_config = config::load_config(config::get_config_file());
+    let user_config = config::Config::load();
 
     eprintln!("{:?}", &user_config);
 
