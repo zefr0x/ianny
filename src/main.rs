@@ -6,6 +6,9 @@ extern crate wayland_client;
 extern crate wayland_protocols;
 extern crate wayland_protocols_plasma;
 
+mod config;
+
+use config::Config;
 use gettextrs::{gettext, ngettext};
 use single_instance::SingleInstance;
 use std::env;
@@ -20,15 +23,20 @@ use wayland_protocols::ext::idle_notify::v1::client::{
 };
 use wayland_protocols_plasma::idle::client::{org_kde_kwin_idle, org_kde_kwin_idle_timeout};
 
-mod config;
-
 const APP_ID: &str = "io.github.zefr0x.ianny";
+
+static CONFIG: once_cell::sync::Lazy<Config> = once_cell::sync::Lazy::new(|| {
+    let config = Config::load();
+
+    eprintln!("Config: {:?}", &config.timer);
+
+    config
+});
 
 struct State {
     idle_notifier: Option<ext_idle_notifier_v1::ExtIdleNotifierV1>,
     kde_kwin_idle: Option<org_kde_kwin_idle::OrgKdeKwinIdle>,
     is_active: Arc<(Mutex<bool>, Condvar)>,
-    idle_timeout: Arc<Duration>,
 }
 
 impl wayland_client::Dispatch<wl_registry::WlRegistry, ()> for State {
@@ -89,7 +97,7 @@ impl wayland_client::Dispatch<wl_seat::WlSeat, ()> for State {
     ) {
         if let Some(idle_notifier) = &state.idle_notifier {
             idle_notifier.get_idle_notification(
-                state.idle_timeout.as_millis() as u32,
+                CONFIG.timer.idle_timeout * 1000, // milli seconds
                 seat,
                 queue_handle,
                 (),
@@ -98,7 +106,7 @@ impl wayland_client::Dispatch<wl_seat::WlSeat, ()> for State {
         if let Some(kde_kwin_idle) = &state.kde_kwin_idle {
             kde_kwin_idle.get_idle_timeout(
                 seat,
-                state.idle_timeout.as_millis() as u32,
+                CONFIG.timer.idle_timeout * 1000, // milli seconds
                 queue_handle,
                 (),
             );
@@ -265,17 +273,11 @@ fn main() {
 
     eprintln!("Application locale: {}", String::from_utf8_lossy(&app_lang));
 
-    // Load config file
-    let user_config = config::Config::load();
-
-    eprintln!("{:?}", &user_config);
-
     // Create main state for the app to store shared things.
     let mut state = State {
         idle_notifier: None,
         kde_kwin_idle: None,
         is_active: Arc::new((Mutex::new(true), Condvar::new())),
-        idle_timeout: Arc::new(Duration::from_secs(user_config.timer.idle_timeout)),
     };
 
     // Connect to Wayland server
@@ -292,18 +294,17 @@ fn main() {
 
     // Thread safe clones.
     let is_active1 = Arc::clone(&state.is_active);
-    let idle_timeout1 = Arc::clone(&state.idle_timeout);
 
     // Timer thread.
     std::thread::spawn(move || {
         let (lock, cvar) = &*is_active1;
 
         let pause_duration = std::cmp::min(
-            gcd::binary_u64(
-                user_config.timer.short_break_timeout,
-                user_config.timer.long_break_timeout,
+            gcd::binary_u32(
+                CONFIG.timer.short_break_timeout,
+                CONFIG.timer.long_break_timeout,
             ), // Calculate GCD
-            idle_timeout1.as_secs() + 1, // Extra one second to make sure
+            CONFIG.timer.idle_timeout + 1, // Extra one second to make sure
         ); // secands
 
         let mut short_time_pased = 0; // secands
@@ -313,18 +314,18 @@ fn main() {
 
         // Timer loop.
         loop {
-            std::thread::sleep(Duration::from_secs(pause_duration));
+            std::thread::sleep(Duration::from_secs(pause_duration as u64));
             short_time_pased.add_assign(pause_duration);
             long_time_pased.add_assign(pause_duration);
 
             let is_active_guard = lock.lock().unwrap();
 
             if *is_active_guard {
-                if long_time_pased >= user_config.timer.long_break_timeout {
+                if long_time_pased >= CONFIG.timer.long_break_timeout {
                     eprintln!("Long break starts");
 
                     show_break_notification(
-                        Duration::from_secs(user_config.timer.long_break_duration),
+                        Duration::from_secs(CONFIG.timer.long_break_duration as u64),
                         notify_rust::Hint::SoundName("suspend-error".to_owned()), // Name or file
                     );
 
@@ -333,11 +334,11 @@ fn main() {
                     // Reset timers.
                     long_time_pased = 0;
                     short_time_pased = 0;
-                } else if short_time_pased >= user_config.timer.short_break_timeout {
+                } else if short_time_pased >= CONFIG.timer.short_break_timeout {
                     eprintln!("Short break starts");
 
                     show_break_notification(
-                        Duration::from_secs(user_config.timer.short_break_duration),
+                        Duration::from_secs(CONFIG.timer.short_break_duration as u64),
                         notify_rust::Hint::SoundName("suspend-error".to_owned()), // Name or file
                     );
 

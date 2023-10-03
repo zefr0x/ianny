@@ -159,6 +159,7 @@ dependencies = [
  "gcd",
  "gettext-rs",
  "notify-rust",
+ "once_cell",
  "serde",
  "single-instance",
  "toml",
@@ -339,6 +340,12 @@ checksum = "c92d4ddb4bd7b50d730c215ff871754d0da6b2178849f8a2a2ab69712d0c073b"
 dependencies = [
  "objc",
 ]
+
+[[package]]
+name = "once_cell"
+version = "1.18.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "dd8b5dd2ae5ed71462c540258bedcb51965123ad7e7ccf4b9a8cafaa4a63576d"
 
 [[package]]
 name = "pkg-config"

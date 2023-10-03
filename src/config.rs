@@ -13,11 +13,11 @@ pub struct Config {
 #[derive(Debug, serde::Deserialize)]
 #[serde(default)]
 pub struct Timer {
-    pub idle_timeout: u64,         // Seconds
-    pub short_break_timeout: u64,  // Seconds
-    pub long_break_timeout: u64,   // Seconds
-    pub short_break_duration: u64, // Seconds
-    pub long_break_duration: u64,  // Seconds
+    pub idle_timeout: u32,         // Seconds
+    pub short_break_timeout: u32,  // Seconds
+    pub long_break_timeout: u32,   // Seconds
+    pub short_break_duration: u32, // Seconds
+    pub long_break_duration: u32,  // Seconds
 }
 
 impl Default for Timer {
