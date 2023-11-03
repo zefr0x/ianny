@@ -25,6 +25,7 @@ use wayland_protocols_plasma::idle::client::{org_kde_kwin_idle, org_kde_kwin_idl
 
 const APP_ID: &str = "io.github.zefr0x.ianny";
 
+// TODO: Replace once_cell's Lazy with std's Lazy after stabilized.
 static CONFIG: once_cell::sync::Lazy<Config> = once_cell::sync::Lazy::new(|| {
     let config = Config::load();
 
@@ -33,9 +34,13 @@ static CONFIG: once_cell::sync::Lazy<Config> = once_cell::sync::Lazy::new(|| {
     config
 });
 
+enum IdleInterface {
+    IdleNotifier(ext_idle_notifier_v1::ExtIdleNotifierV1),
+    KdeKwinIdle(org_kde_kwin_idle::OrgKdeKwinIdle),
+}
+
 struct State {
-    idle_notifier: Option<ext_idle_notifier_v1::ExtIdleNotifierV1>,
-    kde_kwin_idle: Option<org_kde_kwin_idle::OrgKdeKwinIdle>,
+    idle_interface: Option<IdleInterface>,
     is_active: Arc<(Mutex<bool>, Condvar)>,
 }
 
@@ -56,29 +61,34 @@ impl wayland_client::Dispatch<wl_registry::WlRegistry, ()> for State {
                 "wl_seat" => {
                     registry.bind::<wl_seat::WlSeat, _, _>(name, 1, queue_handle, ());
                 }
-                // TODO: Only bind to this if both are supported by the compositor.
+                // First one to be offered by the compositor will be used.
                 "ext_idle_notifier_v1" => {
-                    state.idle_notifier = Some(
-                        registry.bind::<ext_idle_notifier_v1::ExtIdleNotifierV1, _, _>(
-                            name,
-                            1,
-                            queue_handle,
-                            (),
-                        ),
-                    );
-
-                    eprintln!("Binded to ext_idle_notifier_v1")
-                }
-                "org_kde_kwin_idle" => {
-                    state.kde_kwin_idle =
-                        Some(registry.bind::<org_kde_kwin_idle::OrgKdeKwinIdle, _, _>(
-                            name,
-                            1,
-                            queue_handle,
-                            (),
+                    if state.idle_interface.is_none() {
+                        state.idle_interface = Some(IdleInterface::IdleNotifier(
+                            registry.bind::<ext_idle_notifier_v1::ExtIdleNotifierV1, _, _>(
+                                name,
+                                1,
+                                queue_handle,
+                                (),
+                            ),
                         ));
 
-                    eprintln!("Binded to org_kde_kwin_idle")
+                        eprintln!("Binded to ext_idle_notifier_v1");
+                    }
+                }
+                "org_kde_kwin_idle" => {
+                    if state.idle_interface.is_none() {
+                        state.idle_interface = Some(IdleInterface::KdeKwinIdle(
+                            registry.bind::<org_kde_kwin_idle::OrgKdeKwinIdle, _, _>(
+                                name,
+                                1,
+                                queue_handle,
+                                (),
+                            ),
+                        ));
+
+                        eprintln!("Binded to org_kde_kwin_idle");
+                    }
                 }
                 _ => {}
             }
@@ -95,21 +105,25 @@ impl wayland_client::Dispatch<wl_seat::WlSeat, ()> for State {
         _conn: &wayland_client::Connection,
         queue_handle: &wayland_client::QueueHandle<State>,
     ) {
-        if let Some(idle_notifier) = &state.idle_notifier {
-            idle_notifier.get_idle_notification(
-                CONFIG.timer.idle_timeout * 1000, // milli seconds
-                seat,
-                queue_handle,
-                (),
-            );
-        }
-        if let Some(kde_kwin_idle) = &state.kde_kwin_idle {
-            kde_kwin_idle.get_idle_timeout(
-                seat,
-                CONFIG.timer.idle_timeout * 1000, // milli seconds
-                queue_handle,
-                (),
-            );
+        if let Some(idle_interface) = &state.idle_interface {
+            match idle_interface {
+                IdleInterface::IdleNotifier(idle_notifier) => {
+                    idle_notifier.get_idle_notification(
+                        CONFIG.timer.idle_timeout * 1000, // milli seconds
+                        seat,
+                        queue_handle,
+                        (),
+                    );
+                }
+                IdleInterface::KdeKwinIdle(kde_kwin_idle) => {
+                    kde_kwin_idle.get_idle_timeout(
+                        seat,
+                        CONFIG.timer.idle_timeout * 1000, // milli seconds
+                        queue_handle,
+                        (),
+                    );
+                }
+            }
         }
     }
 }
@@ -275,8 +289,7 @@ fn main() {
 
     // Create main state for the app to store shared things.
     let mut state = State {
-        idle_notifier: None,
-        kde_kwin_idle: None,
+        idle_interface: None,
         is_active: Arc::new((Mutex::new(true), Condvar::new())),
     };
 
