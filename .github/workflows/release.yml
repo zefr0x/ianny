@@ -39,12 +39,32 @@ jobs:
       RUST_BACKTRACE: 1
     strategy:
       matrix:
-        build: [linux]
+        build: [x86_64-linux-musl, i686-linux-musl, arm-linux-musleabihf]
         include:
-          - build: linux
+          # - build: x86_64-linux-gnu
+          #   os: ubuntu-latest
+          #   rust: stable
+          #   target: x86_64-unknown-linux-gnu
+          - build: x86_64-linux-musl
             os: ubuntu-latest
             rust: stable
             target: x86_64-unknown-linux-musl
+          # - build: i686-linux-gnu
+          #   os: ubuntu-latest
+          #   rust: stable
+          #   target: i686-unknown-linux-musl
+          - build: i686-linux-musl
+            os: ubuntu-latest
+            rust: stable
+            target: i686-unknown-linux-musl
+          # - build: arm-linux-gnueabihf
+          #   os: ubuntu-latest
+          #   rust: stable
+          #   target: arm-unknown-linux-gnueabihf
+          - build: arm-linux-musleabihf
+            os: ubuntu-latest
+            rust: stable
+            target: arm-unknown-linux-musleabihf
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
