@@ -39,7 +39,8 @@ jobs:
       RUST_BACKTRACE: 1
     strategy:
       matrix:
-        build: [x86_64-linux-musl, i686-linux-musl, arm-linux-musleabihf]
+        build: [x86_64-linux-musl]
+        # FIX: Building for arm and i686.
         include:
           # - build: x86_64-linux-gnu
           #   os: ubuntu-latest
@@ -53,18 +54,18 @@ jobs:
           #   os: ubuntu-latest
           #   rust: stable
           #   target: i686-unknown-linux-musl
-          - build: i686-linux-musl
-            os: ubuntu-latest
-            rust: stable
-            target: i686-unknown-linux-musl
+          # - build: i686-linux-musl
+          #   os: ubuntu-latest
+          #   rust: stable
+          #   target: i686-unknown-linux-musl
           # - build: arm-linux-gnueabihf
           #   os: ubuntu-latest
           #   rust: stable
           #   target: arm-unknown-linux-gnueabihf
-          - build: arm-linux-musleabihf
-            os: ubuntu-latest
-            rust: stable
-            target: arm-unknown-linux-musleabihf
+          # - build: arm-linux-musleabihf
+          #   os: ubuntu-latest
+          #   rust: stable
+          #   target: arm-unknown-linux-musleabihf
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
@@ -73,12 +74,14 @@ jobs:
         uses: dtolnay/rust-toolchain@v1
         with:
           toolchain: ${{ matrix.rust }}
-          target: ${{ matrix.target }}
+          targets: ${{ matrix.target }}
 
       - name: Install System Deps
         shell: bash
+        # FIX: Install deps for arm and i686
         run: sudo apt install libdbus-1-dev desktop-file-utils gettext meson -y
 
+        # FIX: Building for arm and i686 with meson
       - name: Setup
         run: meson build
 
