@@ -1,5 +1,12 @@
 # Unreleased
 
+# 1.0.0beta.0
+
+- Improved
+
+  - Reduce release builds binary size.
+  - Just use one idel interface if both are implemented in the wayland compositor.
+
 # 0.1.0alpha.2
 
 ## Added
