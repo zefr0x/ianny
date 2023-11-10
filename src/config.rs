@@ -7,7 +7,15 @@ use std::path::PathBuf;
 #[derive(Default, Debug, serde::Deserialize)]
 #[serde(default)]
 pub struct Config {
+    pub notification: Notification,
     pub timer: Timer,
+}
+
+#[derive(Debug, serde::Deserialize)]
+#[serde(default)]
+pub struct Notification {
+    pub show_progress_bar: bool,
+    pub minimum_update_delay: u32,
 }
 
 #[derive(Debug, serde::Deserialize)]
@@ -18,6 +26,15 @@ pub struct Timer {
     pub long_break_timeout: u32,   // Seconds
     pub short_break_duration: u32, // Seconds
     pub long_break_duration: u32,  // Seconds
+}
+
+impl Default for Notification {
+    fn default() -> Self {
+        Notification {
+            show_progress_bar: true,
+            minimum_update_delay: 1,
+        }
+    }
 }
 
 impl Default for Timer {

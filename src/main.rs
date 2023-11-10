@@ -29,7 +29,7 @@ const APP_ID: &str = "io.github.zefr0x.ianny";
 static CONFIG: once_cell::sync::Lazy<Config> = once_cell::sync::Lazy::new(|| {
     let config = Config::load();
 
-    eprintln!("Config: {:?}", &config.timer);
+    eprintln!("{:?}", &config);
 
     config
 });
@@ -252,12 +252,23 @@ fn show_break_notification(break_time: Duration, notification_sound_hint: notify
         .show()
         .unwrap();
 
-    // Progress bar.
-    let step = break_time.div_f32(100.0);
-    for i in 0..100 {
-        handle.hint(Hint::CustomInt("value".to_owned(), i));
-        handle.update();
-        std::thread::sleep(step);
+    if CONFIG.notification.show_progress_bar {
+        let step = break_time.div_f32(100.0);
+
+        // Step should not be less than delay between notification updates.
+        if step >= Duration::from_secs(CONFIG.notification.minimum_update_delay as u64) {
+            for i in 1..100 {
+                std::thread::sleep(step);
+                // Progress bar update
+                handle.hint(Hint::CustomInt("value".to_owned(), i));
+                handle.update();
+            }
+        } else {
+            // TODO: Handle by fractioning progress bar into less than 100 part.
+            std::thread::sleep(break_time);
+        }
+    } else {
+        std::thread::sleep(break_time);
     }
 
     handle.close();
@@ -294,6 +305,7 @@ fn main() {
     };
 
     // Connect to Wayland server
+    // TODO: Handle error and print message.
     let conn = wayland_client::Connection::connect_to_env().unwrap();
 
     let mut event_queue = conn.new_event_queue::<State>();
