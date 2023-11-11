@@ -305,8 +305,8 @@ fn main() {
     };
 
     // Connect to Wayland server
-    // TODO: Handle error and print message.
-    let conn = wayland_client::Connection::connect_to_env().unwrap();
+    let conn = wayland_client::Connection::connect_to_env()
+        .expect("Not able to detect a wayland compositor");
 
     let mut event_queue = conn.new_event_queue::<State>();
     let queue_handle = event_queue.handle();
