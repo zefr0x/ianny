@@ -1,5 +1,17 @@
 # Unreleased
 
+# 1.0.0beta.1
+
+- Added
+
+  - `notification:show_progress_bar` and `notification:minimum_update_delay` config options.
+  - Error message when no Wayland compositor is detected.
+
+- Fixed
+
+  - No ensured delay between notification updates.
+  - No progress bar handling for durations less than 100 seconds.
+
 # 1.0.0beta.0
 
 - Improved
