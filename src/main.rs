@@ -253,19 +253,24 @@ fn show_break_notification(break_time: Duration, notification_sound_hint: notify
         .unwrap();
 
     if CONFIG.notification.show_progress_bar {
-        let step = break_time.div_f32(100.0);
+        let step =
+            CONFIG.notification.minimum_update_delay as f64 / break_time.as_secs_f64() * 100.0;
+        let step_duration = Duration::from_secs(CONFIG.notification.minimum_update_delay as u64);
 
-        // Step should not be less than delay between notification updates.
-        if step >= Duration::from_secs(CONFIG.notification.minimum_update_delay as u64) {
-            for i in 1..100 {
-                std::thread::sleep(step);
+        let mut i = 0.0;
+
+        while i < 100.0 {
+            std::thread::sleep(step_duration);
+
+            i += step;
+
+            // FIX: Floating point problems leads to update when not needed.
+            // HACK: The f64 data type is used to minimize the impact.
+            if (i as i32) != ((i - step) as i32) {
                 // Progress bar update
-                handle.hint(Hint::CustomInt("value".to_owned(), i));
+                handle.hint(Hint::CustomInt("value".to_owned(), i as i32));
                 handle.update();
             }
-        } else {
-            // TODO: Handle by fractioning progress bar into less than 100 part.
-            std::thread::sleep(break_time);
         }
     } else {
         std::thread::sleep(break_time);
