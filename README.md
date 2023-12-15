@@ -34,7 +34,7 @@ You can find the latest Github release [here](https://github.com/zefr0x/ianny/re
 
 ## Build
 
-> **Note**
+> [!Note]
 > You need to have [`cargo`](https://doc.rust-lang.org/cargo/), [`meson`](https://mesonbuild.com/) and [`libdbus-1-dev`](https://www.freedesktop.org/wiki/Software/dbus/) installed in you system.
 
 ```shell
@@ -80,7 +80,7 @@ show_progress_bar = true
 minimum_update_delay = 1
 ```
 
-> **Note**
+> [!Note]
 > Time specified in seconds
 
 ## Q&A
