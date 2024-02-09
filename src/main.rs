@@ -1,27 +1,20 @@
-extern crate gcd;
-extern crate gettextrs;
-extern crate notify_rust;
-extern crate single_instance;
-extern crate wayland_client;
-extern crate wayland_protocols;
-extern crate wayland_protocols_plasma;
-
 mod config;
 
-use config::Config;
-use gettextrs::{gettext, ngettext};
-use single_instance::SingleInstance;
-use std::env;
-use std::time::Duration;
+use core::{fmt::Write, ops::AddAssign, time::Duration};
 use std::{
-    ops::AddAssign,
+    env,
     sync::{Arc, Condvar, Mutex},
 };
+
+use gettextrs::{gettext, ngettext};
+use single_instance::SingleInstance;
 use wayland_client::protocol::{wl_registry, wl_seat};
 use wayland_protocols::ext::idle_notify::v1::client::{
     ext_idle_notification_v1, ext_idle_notifier_v1,
 };
 use wayland_protocols_plasma::idle::client::{org_kde_kwin_idle, org_kde_kwin_idle_timeout};
+
+use config::Config;
 
 const APP_ID: &str = "io.github.zefr0x.ianny";
 
@@ -41,17 +34,19 @@ enum IdleInterface {
 
 struct State {
     idle_interface: Option<IdleInterface>,
+    // PERF: Use AtomicBool with Condvar if posibble.
     is_active: Arc<(Mutex<bool>, Condvar)>,
 }
 
+// TODO: Move wayland code to separate file.
 impl wayland_client::Dispatch<wl_registry::WlRegistry, ()> for State {
     fn event(
         state: &mut Self,
         registry: &wl_registry::WlRegistry,
         event: wl_registry::Event,
-        _: &(),
+        &(): &(),
         _conn: &wayland_client::Connection,
-        queue_handle: &wayland_client::QueueHandle<State>,
+        queue_handle: &wayland_client::QueueHandle<Self>,
     ) {
         if let wl_registry::Event::Global {
             name, interface, ..
@@ -101,9 +96,9 @@ impl wayland_client::Dispatch<wl_seat::WlSeat, ()> for State {
         state: &mut Self,
         seat: &wl_seat::WlSeat,
         _event: wl_seat::Event,
-        _: &(),
+        &(): &(),
         _conn: &wayland_client::Connection,
-        queue_handle: &wayland_client::QueueHandle<State>,
+        queue_handle: &wayland_client::QueueHandle<Self>,
     ) {
         if let Some(idle_interface) = &state.idle_interface {
             match idle_interface {
@@ -133,9 +128,9 @@ impl wayland_client::Dispatch<ext_idle_notifier_v1::ExtIdleNotifierV1, ()> for S
         _state: &mut Self,
         _idle_notifier: &ext_idle_notifier_v1::ExtIdleNotifierV1,
         _event: ext_idle_notifier_v1::Event,
-        _: &(),
+        &(): &(),
         _conn: &wayland_client::Connection,
-        _queue_handle: &wayland_client::QueueHandle<State>,
+        _queue_handle: &wayland_client::QueueHandle<Self>,
     ) {
         // No events
     }
@@ -146,9 +141,9 @@ impl wayland_client::Dispatch<org_kde_kwin_idle::OrgKdeKwinIdle, ()> for State {
         _state: &mut Self,
         _kwin_idle: &org_kde_kwin_idle::OrgKdeKwinIdle,
         _event: org_kde_kwin_idle::Event,
-        _: &(),
+        &(): &(),
         _conn: &wayland_client::Connection,
-        _queue_handle: &wayland_client::QueueHandle<State>,
+        _queue_handle: &wayland_client::QueueHandle<Self>,
     ) {
         // No events
     }
@@ -159,13 +154,13 @@ impl wayland_client::Dispatch<ext_idle_notification_v1::ExtIdleNotificationV1, (
         state: &mut Self,
         _idle_notification: &ext_idle_notification_v1::ExtIdleNotificationV1,
         event: ext_idle_notification_v1::Event,
-        _: &(),
+        &(): &(),
         _conn: &wayland_client::Connection,
-        _queue_handle: &wayland_client::QueueHandle<State>,
+        _queue_handle: &wayland_client::QueueHandle<Self>,
     ) {
         let (lock, cvar) = &*state.is_active;
 
-        match &event {
+        match event {
             ext_idle_notification_v1::Event::Idled => {
                 *lock.lock().unwrap() = false;
                 cvar.notify_one();
@@ -188,13 +183,13 @@ impl wayland_client::Dispatch<org_kde_kwin_idle_timeout::OrgKdeKwinIdleTimeout, 
         state: &mut Self,
         _idle_timeout: &org_kde_kwin_idle_timeout::OrgKdeKwinIdleTimeout,
         event: org_kde_kwin_idle_timeout::Event,
-        _: &(),
+        &(): &(),
         _conn: &wayland_client::Connection,
-        _queue_handle: &wayland_client::QueueHandle<State>,
+        _queue_handle: &wayland_client::QueueHandle<Self>,
     ) {
         let (lock, cvar) = &*state.is_active;
 
-        match &event {
+        match event {
             org_kde_kwin_idle_timeout::Event::Idle => {
                 *lock.lock().unwrap() = false;
                 cvar.notify_one();
@@ -221,23 +216,27 @@ fn show_break_notification(break_time: Duration, notification_sound_hint: notify
     let mut message = gettext("Take a break for");
 
     if minutes != 0 {
-        message += &ngettext!(
-            " <b>{} minute</b>",
-            " <b>{} minutes</b>",
-            minutes as u32,
-            minutes
-        );
+        // FIX: Languages where number should be after the word.
+        write!(
+            message,
+            " <b>{} {}</b>",
+            minutes,
+            &ngettext("minute", "minutes", u32::try_from(minutes).unwrap())
+        )
+        .unwrap();
     }
     if minutes != 0 && seconds != 0 {
         message += &gettext(" and");
     }
     if seconds != 0 {
-        message += &ngettext!(
-            " <b>{} second</b>",
-            " <b>{} seconds</b>",
-            seconds as u32,
-            seconds
+        // FIX: Languages where number should be after the word.
+        write!(
+            message,
+            " <b>{} {}</b>",
+            seconds,
+            &ngettext("second", "seconds", u32::try_from(minutes).unwrap())
         )
+        .unwrap();
     };
 
     let mut handle = Notification::new()
@@ -250,22 +249,24 @@ fn show_break_notification(break_time: Duration, notification_sound_hint: notify
         .hint(Hint::Resident(true))
         .timeout(Timeout::Never)
         .show()
-        .unwrap();
+        .expect("Failed to send notification.");
 
     if CONFIG.notification.show_progress_bar {
+        #[allow(clippy::cast_precision_loss)]
         let step =
-            CONFIG.notification.minimum_update_delay as f64 / break_time.as_secs_f64() * 100.0;
-        let step_duration = Duration::from_secs(CONFIG.notification.minimum_update_delay as u64);
+            CONFIG.notification.minimum_update_delay as f64 / break_time.as_secs_f64() * 100.0_f64;
+        let step_duration = Duration::from_secs(CONFIG.notification.minimum_update_delay);
 
-        let mut i = 0.0;
+        let mut i: f64 = 0.0;
 
-        while i < 100.0 {
+        while i < 100.0_f64 {
             std::thread::sleep(step_duration);
 
             i += step;
 
             // FIX: Floating point problems leads to update when not needed.
             // HACK: The f64 data type is used to minimize the impact.
+            #[allow(clippy::cast_possible_truncation)]
             if (i as i32) != ((i - step) as i32) {
                 // Progress bar update
                 handle.hint(Hint::CustomInt("value".to_owned(), i as i32));
@@ -306,12 +307,13 @@ fn main() {
     // Create main state for the app to store shared things.
     let mut state = State {
         idle_interface: None,
+        #[allow(clippy::mutex_atomic)]
         is_active: Arc::new((Mutex::new(true), Condvar::new())),
     };
 
     // Connect to Wayland server
     let conn = wayland_client::Connection::connect_to_env()
-        .expect("Not able to detect a wayland compositor");
+        .expect("Not able to detect a wayland compositor.");
 
     let mut event_queue = conn.new_event_queue::<State>();
     let queue_handle = event_queue.handle();
@@ -320,7 +322,9 @@ fn main() {
 
     let _registry = display.get_registry(&queue_handle, ());
 
-    event_queue.roundtrip(&mut state).unwrap();
+    event_queue
+        .roundtrip(&mut state)
+        .expect("Failed to cause a synchronous round trip with the wayland server.");
 
     // Thread safe clones.
     let is_active1 = Arc::clone(&state.is_active);
@@ -329,12 +333,12 @@ fn main() {
     std::thread::spawn(move || {
         let (lock, cvar) = &*is_active1;
 
-        let pause_duration = std::cmp::min(
-            gcd::binary_u32(
+        let pause_duration = core::cmp::min(
+            gcd::binary_u64(
                 CONFIG.timer.short_break_timeout,
                 CONFIG.timer.long_break_timeout,
             ), // Calculate GCD
-            CONFIG.timer.idle_timeout + 1, // Extra one second to make sure
+            u64::from(CONFIG.timer.idle_timeout) + 1, // Extra one second to make sure
         ); // secands
 
         let mut short_time_pased = 0; // secands
@@ -344,18 +348,16 @@ fn main() {
 
         // Timer loop.
         loop {
-            std::thread::sleep(Duration::from_secs(pause_duration as u64));
+            std::thread::sleep(Duration::from_secs(pause_duration));
             short_time_pased.add_assign(pause_duration);
             long_time_pased.add_assign(pause_duration);
 
-            let is_active_guard = lock.lock().unwrap();
-
-            if *is_active_guard {
+            if *lock.lock().unwrap() {
                 if long_time_pased >= CONFIG.timer.long_break_timeout {
                     eprintln!("Long break starts");
 
                     show_break_notification(
-                        Duration::from_secs(CONFIG.timer.long_break_duration as u64),
+                        Duration::from_secs(CONFIG.timer.long_break_duration),
                         notify_rust::Hint::SoundName("suspend-error".to_owned()), // Name or file
                     );
 
@@ -368,7 +370,7 @@ fn main() {
                     eprintln!("Short break starts");
 
                     show_break_notification(
-                        Duration::from_secs(CONFIG.timer.short_break_duration as u64),
+                        Duration::from_secs(CONFIG.timer.short_break_duration),
                         notify_rust::Hint::SoundName("suspend-error".to_owned()), // Name or file
                     );
 
@@ -377,9 +379,9 @@ fn main() {
                     // Reset timer.
                     short_time_pased = 0;
                 }
-            } else if !*is_active_guard {
+            } else if !*lock.lock().unwrap() {
                 // Wait for change, when user resume from idle.
-                let _guard = cvar.wait(is_active_guard).unwrap();
+                let _guard = cvar.wait(lock.lock().unwrap()).unwrap();
 
                 // Reset timers.
                 long_time_pased = 0;
@@ -392,6 +394,8 @@ fn main() {
 
     // Main loop.
     loop {
-        event_queue.blocking_dispatch(&mut state).unwrap();
+        event_queue
+            .blocking_dispatch(&mut state)
+            .expect("Failed to block waiting for events and dispatch them.");
     }
 }
