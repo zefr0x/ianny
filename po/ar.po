@@ -1,21 +1,21 @@
 # This file is distributed under the same license as the Ianny package.
-# zefr0x, 2023.
+# zefr0x <>, 2023-2024.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: Ianny VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-02-16 08:11+0000\n"
-"PO-Revision-Date: 2023-09-23 23:21+0300\n"
-"Last-Translator: zefr0x\n"
-"Language-Team: \n"
+"PO-Revision-Date: 2024-02-16 11:15+0300\n"
+"Last-Translator: zefr0x <>\n"
+"Language-Team: Arabic <>\n"
 "Language: ar\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=6; plural=(n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 "
-"&& n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5);\n"
-"X-Generator: Poedit 3.3.2\n"
+"Plural-Forms: nplurals=6; plural= n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 "
+"&& n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;\n"
+"X-Generator: Gtranslator 45.3\n"
 
 #: src/main.rs:27
 msgid "Take a break for"
@@ -24,12 +24,12 @@ msgstr "خُذ اِستِراحَةً لِمُدَّةِ"
 #: src/main.rs:35
 msgid "minute"
 msgid_plural "minutes"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
-msgstr[3] ""
-msgstr[4] ""
-msgstr[5] ""
+msgstr[0] "لَحظَة"
+msgstr[1] "دَقِيقَةٍ وَاحِدَة"
+msgstr[2] "دَقِيقَتانِ اِثنَتان"
+msgstr[3] "دَقِائِق"
+msgstr[4] "دَقِيقَة"
+msgstr[5] "دَقِيقَة"
 
 #: src/main.rs:40
 msgid " and"
@@ -38,12 +38,12 @@ msgstr " وَ"
 #: src/main.rs:48
 msgid "second"
 msgid_plural "seconds"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
-msgstr[3] ""
-msgstr[4] ""
-msgstr[5] ""
+msgstr[0] "لَحظَة"
+msgstr[1] "ثَانِيَةٌ وَاحِدَة"
+msgstr[2] "ثَانِيَتَانِ اِثنَتان"
+msgstr[3] "ثَوانِي"
+msgstr[4] "ثَانِيَة"
+msgstr[5] "ثَانِيَة"
 
 #: src/main.rs:54
 msgid "Break Time!"
