@@ -45,4 +45,4 @@ We use `gettext` in this project, you have `.po` files to translate and a `.desk
 
 1. Copy `po/io.github.zefr0x.ianny.pot` to `po/<language_id>.po`.
 2. Add the language ID to the `po/LINGUAS` file (IDs are separated by space).
-3. Start editing the `.po` file using any editor you want to use (e.g. [`Poedit`](https://poedit.net/)).
+3. Start editing the `.po` file using any editor you want to use (e.g. [`Gtranslator`](https://wiki.gnome.org/Apps/Gtranslator)).
