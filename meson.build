@@ -11,6 +11,8 @@ profile = get_option('profile')
 prefix = get_option('prefix')
 bindir = prefix / get_option('bindir')
 
+rustc_target = get_option('rustc_target')
+
 # Check for deps
 dbus_dep = dependency('dbus-1', version : '>=1.6.0')
 
