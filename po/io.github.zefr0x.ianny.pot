@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Ianny VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-09-23 08:57+0000\n"
+"POT-Creation-Date: 2024-02-16 08:11+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -15,30 +15,30 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/main.rs:199
+#: src/main.rs:27
 msgid "Take a break for"
 msgstr ""
 
-#: src/main.rs:203
-msgid " <b>{} minute</b>"
-msgid_plural " <b>{} minutes</b>"
+#: src/main.rs:35
+msgid "minute"
+msgid_plural "minutes"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/main.rs:210
+#: src/main.rs:40
 msgid " and"
 msgstr ""
 
-#: src/main.rs:214
-msgid " <b>{} second</b>"
-msgid_plural " <b>{} seconds</b>"
+#: src/main.rs:48
+msgid "second"
+msgid_plural "seconds"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/main.rs:222
+#: src/main.rs:54
 msgid "Break Time!"
 msgstr ""
 
-#: src/main.rs:225
+#: src/main.rs:57
 msgid "Ianny"
 msgstr ""
