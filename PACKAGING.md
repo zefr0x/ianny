@@ -27,6 +27,6 @@ A release is a [git tag](https://git-scm.com/docs/git-tag) in the `main` branch 
 
 [ianny-git](https://aur.archlinux.org/packages/ianny-git)
 
-### What should be packaged?
+## What should be packaged?
 
 Only stable [releases](#releases) should be packaged. Not an `alpha` nor a `beta` release should be.
