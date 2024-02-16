@@ -1,5 +1,7 @@
 # Unreleased
 
+# 1.0.0rc
+
 ## Improved
 
 - Better quality and handle more errors.
