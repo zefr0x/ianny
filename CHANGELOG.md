@@ -1,23 +1,35 @@
 # Unreleased
 
+## Improved
+
+- Better quality and handle more errors.
+
+## Changed
+
+- Use system's gettext instead of compiling it.
+
+## Dependencies
+
+- All dependencies are up to date.
+
 # 1.0.0beta.1
 
-- Added
+## Added
 
-  - `notification:show_progress_bar` and `notification:minimum_update_delay` config options.
-  - Error message when no Wayland compositor is detected.
+- `notification:show_progress_bar` and `notification:minimum_update_delay` config options.
+- Error message when no Wayland compositor is detected.
 
-- Fixed
+## Fixed
 
-  - No ensured delay between notification updates.
-  - No progress bar handling for durations less than 100 seconds.
+- No ensured delay between notification updates.
+- No progress bar handling for durations less than 100 seconds.
 
 # 1.0.0beta.0
 
-- Improved
+## Improved
 
-  - Reduce release builds binary size.
-  - Just use one idel interface if both are implemented in the wayland compositor.
+- Reduce release builds binary size.
+- Just use one idel interface if both are implemented in the wayland compositor.
 
 # 0.1.0alpha.2
 
