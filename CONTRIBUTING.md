@@ -7,7 +7,8 @@ For now [GitHub Bug Traker](https://github.com/zefr0x/ianny/issues) is used for 
 ## Development
 
 - The `stable` [Rust](https://www.rust-lang.org/) programming language is used mainly in this project.
-- Dependencies managment and building is handled using [Cargo](https://doc.rust-lang.org/stable/cargo/).
+- Dependencies managment handled using [Cargo](https://doc.rust-lang.org/stable/cargo/).
+- Building handled using [Meson](https://mesonbuild.com/)
 
 ### Style
 

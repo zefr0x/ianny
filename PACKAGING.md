@@ -19,21 +19,13 @@ A release is a [git tag](https://git-scm.com/docs/git-tag) in the `main` branch 
 5. Create a signed git tag with a `v` letter followed by the version number e.g. for `v1.5.3` you should do `git tag -s v1.5.3`.
 6. Push changes to the remote using `git push origin main --tags`
 
-## Packages
+## Official Packages
 
-- [Cargo](https://doc.rust-lang.org/cargo/) is used as a build system and dependencies manager.
-
-### Flatpak
-
-To be added...
-
-### AppImage
-
-Maybe to be added...
+- [Meson](https://mesonbuild.com/) is used as a build system and [Cargo](https://doc.rust-lang.org/cargo/) as dependencies manager.
 
 ### AUR
 
-To be added...
+[ianny-git](https://aur.archlinux.org/packages/ianny-git)
 
 ### What should be packaged?
 
