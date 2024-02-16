@@ -6,6 +6,14 @@
 
 Simple, light-weight, easy to use, and effective [Linux](https://en.wikipedia.org/wiki/Linux) [Wayland](<https://en.wikipedia.org/wiki/Wayland_(protocol)>) desktop utility helps preventing [repetitive strain injuries](https://en.wikipedia.org/wiki/Repetitive_strain_injury) by keeping track of usage patterns and periodically informing user to take breaks.
 
+---
+
+[<kbd><br><b>Install</b><br><br></kbd>](#installation)
+[<kbd><br><b>Contribute</b><br><br></kbd>](CONTRIBUTING.md)
+[<kbd><br><b>Packaging</b><br><br></kbd>](PACKAGING.md)
+
+---
+
 </div>
 
 ## Features
