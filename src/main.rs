@@ -53,7 +53,6 @@ fn show_break_notification(break_time: Duration, notification_sound_hint: notify
     let mut handle = Notification::new()
         .summary(&gettext("Break Time!"))
         .body(&message)
-        .icon(APP_ID)
         .appname(&gettext("Ianny"))
         .hint(notification_sound_hint)
         .hint(Hint::Urgency(Urgency::Critical))
