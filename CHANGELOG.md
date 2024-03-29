@@ -1,5 +1,15 @@
 # Unreleased
 
+# 1.0.0
+
+## Fixed
+
+- Don't specify an icon, since there is none yet.
+
+## Dependencies
+
+- All dependencies are up to date.
+
 # 1.0.0rc
 
 ## Improved
