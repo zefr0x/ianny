@@ -39,17 +39,17 @@ jobs:
       RUST_BACKTRACE: 1
     strategy:
       matrix:
-        build: [x86_64-linux-gnu, x86_64-linux-musl]
+        build: [x86_64-linux-gnu]
         # FIX: Building for arm and i686.
         include:
           - build: x86_64-linux-gnu
             os: ubuntu-latest
             rust: stable
             target: x86_64-unknown-linux-gnu
-          - build: x86_64-linux-musl
-            os: ubuntu-latest
-            rust: stable
-            target: x86_64-unknown-linux-musl
+          # - build: x86_64-linux-musl
+          #   os: ubuntu-latest
+          #   rust: stable
+          #   target: x86_64-unknown-linux-musl
           # - build: i686-linux-gnu
           #   os: ubuntu-latest
           #   rust: stable
