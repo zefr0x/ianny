@@ -26,7 +26,6 @@ single-instance = "0.3.3"
 toml = "0.8.12"
 wayland-client = "0.31.2"
 wayland-protocols = { version = "0.31.2", features = ["client", "staging"] }
-wayland-protocols-plasma = { version = "0.2.0", features = ["client"] }
 xdg = "2.5.2"
 
 # TODO: Consider commented lints when they are stable.

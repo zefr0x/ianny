@@ -4,13 +4,11 @@ use wayland_client::protocol::{wl_registry, wl_seat};
 use wayland_protocols::ext::idle_notify::v1::client::{
     ext_idle_notification_v1, ext_idle_notifier_v1,
 };
-use wayland_protocols_plasma::idle::client::{org_kde_kwin_idle, org_kde_kwin_idle_timeout};
 
 use crate::CONFIG;
 
 enum IdleInterface {
     IdleNotifier(ext_idle_notifier_v1::ExtIdleNotifierV1),
-    KdeKwinIdle(org_kde_kwin_idle::OrgKdeKwinIdle),
 }
 
 pub struct State {
@@ -65,20 +63,6 @@ impl wayland_client::Dispatch<wl_registry::WlRegistry, ()> for State {
                         eprintln!("Binded to ext_idle_notifier_v1");
                     }
                 }
-                "org_kde_kwin_idle" => {
-                    if state.idle_interface.is_none() {
-                        state.idle_interface = Some(IdleInterface::KdeKwinIdle(
-                            registry.bind::<org_kde_kwin_idle::OrgKdeKwinIdle, _, _>(
-                                name,
-                                1,
-                                queue_handle,
-                                (),
-                            ),
-                        ));
-
-                        eprintln!("Binded to org_kde_kwin_idle");
-                    }
-                }
                 _ => {}
             }
         }
@@ -104,14 +88,6 @@ impl wayland_client::Dispatch<wl_seat::WlSeat, ()> for State {
                         (),
                     );
                 }
-                IdleInterface::KdeKwinIdle(kde_kwin_idle) => {
-                    kde_kwin_idle.get_idle_timeout(
-                        seat,
-                        CONFIG.timer.idle_timeout * 1000, // milli seconds
-                        queue_handle,
-                        (),
-                    );
-                }
             }
         }
     }
@@ -122,19 +98,6 @@ impl wayland_client::Dispatch<ext_idle_notifier_v1::ExtIdleNotifierV1, ()> for S
         _state: &mut Self,
         _idle_notifier: &ext_idle_notifier_v1::ExtIdleNotifierV1,
         _event: ext_idle_notifier_v1::Event,
-        &(): &(),
-        _conn: &wayland_client::Connection,
-        _queue_handle: &wayland_client::QueueHandle<Self>,
-    ) {
-        // No events
-    }
-}
-
-impl wayland_client::Dispatch<org_kde_kwin_idle::OrgKdeKwinIdle, ()> for State {
-    fn event(
-        _state: &mut Self,
-        _kwin_idle: &org_kde_kwin_idle::OrgKdeKwinIdle,
-        _event: org_kde_kwin_idle::Event,
         &(): &(),
         _conn: &wayland_client::Connection,
         _queue_handle: &wayland_client::QueueHandle<Self>,
@@ -162,35 +125,6 @@ impl wayland_client::Dispatch<ext_idle_notification_v1::ExtIdleNotificationV1, (
                 eprintln!("Idled");
             }
             ext_idle_notification_v1::Event::Resumed => {
-                *lock.lock().unwrap() = true;
-                cvar.notify_one();
-
-                eprintln!("Resumed");
-            }
-            _ => {}
-        }
-    }
-}
-
-impl wayland_client::Dispatch<org_kde_kwin_idle_timeout::OrgKdeKwinIdleTimeout, ()> for State {
-    fn event(
-        state: &mut Self,
-        _idle_timeout: &org_kde_kwin_idle_timeout::OrgKdeKwinIdleTimeout,
-        event: org_kde_kwin_idle_timeout::Event,
-        &(): &(),
-        _conn: &wayland_client::Connection,
-        _queue_handle: &wayland_client::QueueHandle<Self>,
-    ) {
-        let (lock, cvar) = &*state.is_active;
-
-        match event {
-            org_kde_kwin_idle_timeout::Event::Idle => {
-                *lock.lock().unwrap() = false;
-                cvar.notify_one();
-
-                eprintln!("Idled");
-            }
-            org_kde_kwin_idle_timeout::Event::Resumed => {
                 *lock.lock().unwrap() = true;
                 cvar.notify_one();
 
