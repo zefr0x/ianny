@@ -13,8 +13,6 @@ build = "build.rs"
 [profile.release]
 lto = true
 codegen-units = 1
-panic = "abort"
-strip = true
 
 [dependencies]
 gcd = "2.3.0"
