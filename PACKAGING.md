@@ -25,8 +25,10 @@ A release is a [git tag](https://git-scm.com/docs/git-tag) in the `main` branch 
 
 ### AUR
 
-[ianny-git](https://aur.archlinux.org/packages/ianny-git)
+- [ianny](https://aur.archlinux.org/packages/ianny)
+- [ianny-git](https://aur.archlinux.org/packages/ianny-git)
+- [ianny-bin](https://aur.archlinux.org/packages/ianny-bin)
 
 ## What should be packaged?
 
-Only stable [releases](#releases) should be packaged. Not an `alpha` nor a `beta` release should be.
+Only stable [releases](#releases) should be packaged. Neither an `alpha` nor a `beta` release should be.
