@@ -39,7 +39,7 @@ Simple, light-weight, easy to use, and effective [Linux](https://en.wikipedia.or
 All packages are available on AUR, you can:
 
 - build locally from latest release: [ianny](https://aur.archlinux.org/packages/ianny)
-- build locally from a Git tag: [ianny-git](https://aur.archlinux.org/packages/ianny-git)
+- build locally from latest Git commit: [ianny-git](https://aur.archlinux.org/packages/ianny-git)
 - use the binary built by GitHub: [ianny-bin](https://aur.archlinux.org/packages/ianny-bin)
 
 ### Download Binary From GitHub
