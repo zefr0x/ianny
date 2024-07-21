@@ -4,7 +4,7 @@
 
 [![release](https://github.com/zefr0x/ianny/actions/workflows/release.yml/badge.svg)](https://github.com/zefr0x/ianny/actions/workflows/release.yml)
 
-Simple, light-weight, easy to use, and effective [Linux](https://en.wikipedia.org/wiki/Linux) [Wayland](<https://en.wikipedia.org/wiki/Wayland_(protocol)>) desktop utility helps preventing [repetitive strain injuries](https://en.wikipedia.org/wiki/Repetitive_strain_injury) by keeping track of usage patterns and periodically informing user to take breaks.
+Simple, light-weight, easy to use, and effective [Linux](https://en.wikipedia.org/wiki/Linux) [Wayland](<https://en.wikipedia.org/wiki/Wayland_(protocol)>) desktop utility that helps with preventing [repetitive strain injuries](https://en.wikipedia.org/wiki/Repetitive_strain_injury) by keeping track of usage patterns and periodically informing the user to take breaks.
 
 ---
 
@@ -18,7 +18,7 @@ Simple, light-weight, easy to use, and effective [Linux](https://en.wikipedia.or
 
 ## Features
 
-- ⚙ Simple config to tweak it's behavior.
+- ⚙ Simple config to tweak its behavior.
 - 🚀 Auto start it with your desktop environment.
 - 🚫 [X11](https://en.wikipedia.org/wiki/X_Window_System) is not supported.
 - 🚫 Microsoft Windows is definitely not supported.
@@ -34,16 +34,24 @@ Simple, light-weight, easy to use, and effective [Linux](https://en.wikipedia.or
 
 [![Packaging status](https://repology.org/badge/vertical-allrepos/ianny.svg?columns=3)](https://repology.org/project/ianny/versions)
 
-### Download Binary From Github
+### Arch Linux
 
-For every new release a Github workflow will build a binary in Github servers and will upload it as a release asset in Github releases.
+All packages are available on AUR, you can:
 
-You can find the latest Github release [here](https://github.com/zefr0x/ianny/releases/latest) or the releases page [here](https://github.com/zefr0x/ianny/releases).
+- build locally from latest stable release: [ianny](https://aur.archlinux.org/packages/ianny)
+- build locally from latest Git commit: [ianny-git](https://aur.archlinux.org/packages/ianny-git)
+- use the binary built by GitHub: [ianny-bin](https://aur.archlinux.org/packages/ianny-bin)
+
+### Download Binary From GitHub
+
+For every new release a GitHub workflow will build a binary in GitHub servers and will upload it as a release asset in GitHub releases.
+
+You can find the latest GitHub release [here](https://github.com/zefr0x/ianny/releases/latest) or the releases page [here](https://github.com/zefr0x/ianny/releases).
 
 ## Build
 
 > [!Note]
-> You need to have [`cargo`](https://doc.rust-lang.org/cargo/), [`meson`](https://mesonbuild.com/) and [`libdbus-1-dev`](https://www.freedesktop.org/wiki/Software/dbus/) installed in you system.
+> You need to have [`cargo`](https://doc.rust-lang.org/cargo/), [`meson`](https://mesonbuild.com/) and [`libdbus-1-dev`](https://www.freedesktop.org/wiki/Software/dbus/) installed in your system.
 
 ```shell
 git clone https://github.com/zefr0x/ianny.git
@@ -67,7 +75,7 @@ meson install -C build
 
 # Usage
 
-You just need to execute the binary eather direcrly or by enabling it to auto-start with your desktop environment's settings, since it provides a `.desktop` file for auto-start.
+You just need to execute the binary eather directly or by enabling it to auto start with your desktop environment's settings, since it provides a `.desktop` file for auto-start.
 
 # Config
 
