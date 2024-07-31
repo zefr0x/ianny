@@ -59,7 +59,7 @@ fn show_break_notification(break_time: Duration, notification_sound_hint: notify
         .hint(Hint::Resident(true))
         .timeout(Timeout::Never)
         .show()
-        .expect("Failed to send notification.");
+        .expect("Failed to send notification");
 
     if CONFIG.notification.show_progress_bar {
         #[allow(clippy::cast_precision_loss)]
@@ -69,6 +69,7 @@ fn show_break_notification(break_time: Duration, notification_sound_hint: notify
 
         let mut i: f64 = 0.0;
 
+        #[allow(clippy::while_float)]
         while i < 100.0_f64 {
             std::thread::sleep(step_duration);
 
@@ -106,7 +107,7 @@ fn main() {
                 .unwrap_or_else(|_| env::var("LANG").unwrap_or_else(|_| "en_US.UTF-8".to_owned()))
         }),
     )
-    .expect("Failed to set locale, please use a valid system locale and make sure it's enabled.");
+    .expect("Failed to set locale, please use a valid system locale and make sure it's enabled");
     gettextrs::textdomain(APP_ID).unwrap();
     // FIX: Also support /usr/local/share/locale/
     gettextrs::bindtextdomain(APP_ID, "/usr/share/locale").unwrap();
@@ -119,7 +120,7 @@ fn main() {
 
     // Connect to Wayland server
     let conn = wayland_client::Connection::connect_to_env()
-        .expect("Not able to detect a wayland compositor.");
+        .expect("Not able to detect a wayland compositor");
 
     let mut event_queue = conn.new_event_queue::<wayland::State>();
     let queue_handle = event_queue.handle();
@@ -130,7 +131,7 @@ fn main() {
 
     event_queue
         .roundtrip(&mut state)
-        .expect("Failed to cause a synchronous round trip with the wayland server.");
+        .expect("Failed to cause a synchronous round trip with the wayland server");
 
     // Thread safe clone.
     let is_active = state.get_is_active_arc();
@@ -202,6 +203,6 @@ fn main() {
     loop {
         event_queue
             .blocking_dispatch(&mut state)
-            .expect("Failed to block waiting for events and dispatch them.");
+            .expect("Failed to block waiting for events and dispatch them");
     }
 }

@@ -2,8 +2,6 @@ extern crate serde;
 extern crate toml;
 extern crate xdg;
 
-use std::path::PathBuf;
-
 #[derive(Default, Debug, serde::Deserialize)]
 #[serde(default)]
 pub struct Config {
@@ -60,12 +58,12 @@ impl Config {
                 content
             },
         ))
-        .expect("Failed to parse conifg file.")
+        .expect("Failed to parse conifg file")
     }
 
-    fn get_config_file() -> PathBuf {
+    fn get_config_file() -> std::path::PathBuf {
         xdg::BaseDirectories::with_prefix(crate::APP_ID)
-            .expect("Can't find XDG base directories.")
+            .expect("Can't find XDG base directories")
             .get_config_file("config.toml")
     }
 }
