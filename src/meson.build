@@ -1,13 +1,25 @@
-cargo_env = [ 'CARGO_HOME=' + meson.project_build_root() / 'cargo-home' ]
+if get_option('cargo-home') == ''
+  cargo_env = [ 'CARGO_HOME=' + meson.project_build_root() / 'cargo-home' ]
+else
+  cargo_env = [ 'CARGO_HOME=' + get_option('cargo-home') ]
+endif
 
 cargo_options = [ '--manifest-path', meson.project_source_root() / 'Cargo.toml' ]
 cargo_options += [ '--target-dir', meson.project_build_root() / 'src' ]
-cargo_options += [ '--target', rustc_target ]
+if rustc_target != ''
+  cargo_options += [ '--target', rustc_target ]
+endif
 
-if profile == 'release'
+# When cargo-home already contain needed deps and we want to build offline.
+if get_option('offline-build')
+  cargo_options += [ '--offline' ]
+endif
+
+if buildtype == 'plain' or buildtype == 'release' or buildtype == 'minsize'
+  cargo_profile = 'release'
   cargo_options += [ '--release' ]
-  message('Building in release mode')
 else
+  cargo_profile = 'debug'
   message('Building in debug mode')
 endif
 
@@ -25,6 +37,6 @@ cargo_build = custom_target(
     cargo, 'build',
     cargo_options,
     '&&',
-    'cp', 'src' / rustc_target / profile / meson.project_name(), '@OUTPUT@',
+    'cp', 'src' / rustc_target / cargo_profile / meson.project_name(), '@OUTPUT@',
   ]
 )

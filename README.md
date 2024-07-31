@@ -61,16 +61,19 @@ cd ianny
 # Checkout to a release tag e.g. v1.0.1
 git checkout vx.x.x
 
-meson build
-meson compile -C build
+meson setup builddir -Dbuildtype=release
+meson compile -C builddir
 ```
 
-You will find the binary in `./build/src/ianny`
+You will find the binary in `./builddir/src/ianny`
+
+> [!NOTE]
+> For cross compilation you will need to set the `rustc_target` meson option, and create [`.cargo/config.toml`](https://doc.rust-lang.org/cargo/reference/config.html) file to set a `linker` to be used for your target.
 
 To install:
 
 ```shell
-meson install -C build
+meson install -C builddir
 ```
 
 # Usage

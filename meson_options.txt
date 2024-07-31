@@ -1,33 +1,20 @@
 option (
-  'profile',
-  type: 'combo',
-  choices: [
-    'release',
-    'debug'
-  ],
-  value: 'release',
+  'rustc_target',
+  description: 'Rust target triple',
+  type: 'string',
+  value: ''
 )
 
-option (
-  'rustc_target',
-  type: 'combo',
-  choices: [
-    'aarch64-unknown-linux-gnu',
-    'i686-unknown-linux-gnu',
-    'x86_64-unknown-linux-gnu',
+# By default it will use a special cargo-home just for the build.
+option(
+  'cargo-home',
+  type: 'string',
+  value: ''
+)
 
-    'aarch64-unknown-linux-musl',
-    'armv7-unknown-linux-gnueabihf',
-    'loongarch64-unknown-linux-gnu',
-    'riscv64gc-unknown-linux-gnu',
-    'x86_64-unknown-linux-musl',
-
-    'armv7-unknown-linux-gnueabi',
-    'armv7-unknown-linux-musleabi',
-    'armv7-unknown-linux-musleabihf',
-    'i686-unknown-linux-musl',
-    'thumbv7neon-unknown-linux-gnueabihf',
-    'x86_64-unknown-linux-gnux32',
-  ],
-  value: 'x86_64-unknown-linux-gnu',
+# By default it will connect to crates.io to check and downlaod missing rust deps.
+option(
+  'offline-build',
+  type: 'boolean',
+  value: false
 )

@@ -6,7 +6,7 @@ project('ianny', 'rust',
 application_id = 'io.github.zefr0x.ianny'
 
 # Get options
-profile = get_option('profile')
+buildtype = get_option('buildtype')
 
 prefix = get_option('prefix')
 bindir = prefix / get_option('bindir')
@@ -29,10 +29,11 @@ if desktop_utils.found()
 endif
 
 # Build summaries
-summary({
-    'Profile': get_option('profile'),
+summary(
+  {
+    'Build Type': buildtype,
   },
-  section: 'Build options',
+  section: 'Build Summary',
 )
 
 # Other meson.build files
