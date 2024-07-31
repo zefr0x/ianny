@@ -2,15 +2,14 @@ mod config;
 mod wayland;
 
 use core::{fmt::Write, ops::AddAssign, time::Duration};
-use std::env;
+use std::{env, sync::LazyLock};
 
 use gettextrs::{gettext, ngettext};
 use single_instance::SingleInstance;
 
 const APP_ID: &str = "io.github.zefr0x.ianny";
 
-// TODO: Replace once_cell's Lazy with std's Lazy after stabilized.
-static CONFIG: once_cell::sync::Lazy<config::Config> = once_cell::sync::Lazy::new(|| {
+static CONFIG: LazyLock<config::Config> = LazyLock::new(|| {
     let config = config::Config::load();
 
     eprintln!("{:?}", &config);

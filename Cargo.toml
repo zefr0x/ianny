@@ -18,7 +18,6 @@ codegen-units = 1
 gcd = "2.3.0"
 gettext-rs = { version = "0.7.0", features = ["gettext-system"] }
 notify-rust = { version = "4.11.0", default-features = false, features = ["d"] }
-once_cell = "1.19.0"
 serde = { version = "1.0.204", features = ["derive"] }
 single-instance = "0.3.3"
 toml = "0.8.14"
