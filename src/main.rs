@@ -2,7 +2,10 @@ mod config;
 mod wayland;
 
 use core::{fmt::Write, ops::AddAssign, time::Duration};
-use std::{env, sync::LazyLock};
+use std::{
+    env,
+    sync::{mpsc, LazyLock},
+};
 
 use gettextrs::{gettext, ngettext};
 use single_instance::SingleInstance;
@@ -114,8 +117,20 @@ fn main() {
 
     eprintln!("Application locale: {}", String::from_utf8_lossy(&app_lang));
 
+    // Sync channel to share the idle/active state with the timer
+    //
+    // NOTE: Both idle and resume can happen during a break or timer pause,
+    // so we need to buffer two messages in order to catch both.
+    // Also we should guarantee that the main thread is not blocked
+    // (only buffer two messages, and drop any new ones till proccessed),
+    // and we must handle both messages sequentially before catching new pair
+    // (one idle signal must be followed by at least one resume signal).
+    // By limiting the buffer to two messages we also avoid repeating the
+    // timer loop cycle for an aleady resumed idle state.
+    let (signal_sender, signal_receiver) = mpsc::sync_channel(2);
+
     // Create main state for the app to store shared things.
-    let mut state = wayland::State::new();
+    let mut state = wayland::State::new(signal_sender);
 
     // Connect to Wayland server
     let conn = wayland_client::Connection::connect_to_env()
@@ -132,19 +147,14 @@ fn main() {
         .roundtrip(&mut state)
         .expect("Failed to cause a synchronous round trip with the wayland server");
 
-    // Thread safe clone.
-    let is_active = state.get_is_active_arc();
-
-    // Timer thread.
+    // Timer thread
     std::thread::spawn(move || {
-        let (is_active_lock, is_active_cvar) = &*is_active;
-
         let pause_duration = core::cmp::min(
             gcd::binary_u64(
                 CONFIG.timer.short_break_timeout,
                 CONFIG.timer.long_break_timeout,
             ), // Calculate GCD
-            u64::from(CONFIG.timer.idle_timeout) + 1, // Extra one second to make sure
+            u64::from(CONFIG.timer.idle_timeout) + 1, // NOTE: Extra one second to make sure
         ); // secands
 
         let mut short_time_pased = 0; // secands
@@ -158,42 +168,49 @@ fn main() {
             short_time_pased.add_assign(pause_duration);
             long_time_pased.add_assign(pause_duration);
 
-            if *is_active_lock.lock().unwrap() {
-                if long_time_pased >= CONFIG.timer.long_break_timeout {
-                    eprintln!("Long break starts");
+            if signal_receiver
+                .try_recv()
+                .map_or(false, |signal| signal == wayland::Signal::Idled)
+            {
+                // NOTE: If both idle and resume happend right here,
+                // resume will be droped and a race condition will happen in the next loop.
 
-                    show_break_notification(
-                        Duration::from_secs(CONFIG.timer.long_break_duration),
-                        notify_rust::Hint::SoundName("suspend-error".to_owned()), // Name or file
-                    );
-
-                    eprintln!("Long break ends");
-
-                    // Reset timers.
-                    long_time_pased = 0;
-                    short_time_pased = 0;
-                } else if short_time_pased >= CONFIG.timer.short_break_timeout {
-                    eprintln!("Short break starts");
-
-                    show_break_notification(
-                        Duration::from_secs(CONFIG.timer.short_break_duration),
-                        notify_rust::Hint::SoundName("suspend-error".to_owned()), // Name or file
-                    );
-
-                    eprintln!("Short break ends");
-
-                    // Reset timer.
-                    short_time_pased = 0;
-                }
-            } else {
                 // Wait for change, when user resume from idle.
-                let _guard = is_active_cvar.wait(is_active_lock.lock().unwrap()).unwrap();
+                assert_eq!(signal_receiver.recv().unwrap(), wayland::Signal::Resumed);
+
+                // Avoid race condition by cleaning the channel.
+                while signal_receiver.try_recv().is_ok() {}
 
                 // Reset timers.
                 long_time_pased = 0;
                 short_time_pased = 0;
 
                 eprintln!("Timer resetted");
+            } else if long_time_pased >= CONFIG.timer.long_break_timeout {
+                eprintln!("Long break starts");
+
+                show_break_notification(
+                    Duration::from_secs(CONFIG.timer.long_break_duration),
+                    notify_rust::Hint::SoundName("suspend-error".to_owned()), // Name or file
+                );
+
+                eprintln!("Long break ends");
+
+                // Reset timers.
+                long_time_pased = 0;
+                short_time_pased = 0;
+            } else if short_time_pased >= CONFIG.timer.short_break_timeout {
+                eprintln!("Short break starts");
+
+                show_break_notification(
+                    Duration::from_secs(CONFIG.timer.short_break_duration),
+                    notify_rust::Hint::SoundName("suspend-error".to_owned()), // Name or file
+                );
+
+                eprintln!("Short break ends");
+
+                // Reset timer.
+                short_time_pased = 0;
             }
         }
     });

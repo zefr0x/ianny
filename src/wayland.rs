@@ -1,4 +1,4 @@
-use std::sync::{Arc, Condvar, Mutex};
+use std::sync::mpsc;
 
 use wayland_client::protocol::{wl_registry, wl_seat};
 use wayland_protocols::ext::idle_notify::v1::client::{
@@ -7,27 +7,28 @@ use wayland_protocols::ext::idle_notify::v1::client::{
 
 use crate::CONFIG;
 
+// TODO: Simplify type.
 enum IdleInterface {
     IdleNotifier(ext_idle_notifier_v1::ExtIdleNotifierV1),
 }
 
+#[derive(Debug, Eq, PartialEq)]
+pub enum Signal {
+    Idled,
+    Resumed,
+}
+
 pub struct State {
     idle_interface: Option<IdleInterface>,
-    // PERF: Use AtomicBool with Condvar if posibble.
-    is_active: Arc<(Mutex<bool>, Condvar)>,
+    signal_sender: mpsc::SyncSender<Signal>,
 }
 
 impl State {
-    pub fn new() -> Self {
+    pub const fn new(signal_sender: mpsc::SyncSender<Signal>) -> Self {
         Self {
             idle_interface: None,
-            #[allow(clippy::mutex_atomic)]
-            is_active: Arc::new((Mutex::new(true), Condvar::new())),
+            signal_sender,
         }
-    }
-
-    pub fn get_is_active_arc(&self) -> Arc<(Mutex<bool>, Condvar)> {
-        Arc::clone(&self.is_active)
     }
 }
 
@@ -115,20 +116,26 @@ impl wayland_client::Dispatch<ext_idle_notification_v1::ExtIdleNotificationV1, (
         _conn: &wayland_client::Connection,
         _queue_handle: &wayland_client::QueueHandle<Self>,
     ) {
-        let (lock, cvar) = &*state.is_active;
-
         match event {
             ext_idle_notification_v1::Event::Idled => {
-                *lock.lock().unwrap() = false;
-                cvar.notify_one();
-
                 eprintln!("Idled");
+
+                match state.signal_sender.try_send(Signal::Idled) {
+                    Ok(()) | Err(mpsc::TrySendError::Full(_)) => (),
+                    Err(mpsc::TrySendError::Disconnected(_)) => {
+                        panic!("Timer disconnected, `Idled` signal could not be sent")
+                    }
+                }
             }
             ext_idle_notification_v1::Event::Resumed => {
-                *lock.lock().unwrap() = true;
-                cvar.notify_one();
-
                 eprintln!("Resumed");
+
+                match state.signal_sender.try_send(Signal::Resumed) {
+                    Ok(()) | Err(mpsc::TrySendError::Full(_)) => (),
+                    Err(mpsc::TrySendError::Disconnected(_)) => {
+                        panic!("Timer disconnected, `Resumed` signal could not be sent")
+                    }
+                }
             }
             _ => {}
         }
