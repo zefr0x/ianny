@@ -25,7 +25,7 @@ Simple, light-weight, easy to use, and effective [Linux](https://en.wikipedia.or
 
 ## Requirements
 
-- [Wayland Compositor](<https://en.wikipedia.org/wiki/Wayland_(protocol)#Wayland_compositors>) that implements [`ext_idle_notifier_v1`](https://wayland.app/protocols/ext-idle-notify-v1)
+- [Wayland Compositor](<https://en.wikipedia.org/wiki/Wayland_(protocol)#Wayland_compositors>) that optionally implements [`ext_idle_notifier_v1`](https://wayland.app/protocols/ext-idle-notify-v1)
 - [Notification Daemon](https://wiki.archlinux.org/title/Desktop_notifications#Notification_servers) that implements [`org.freedesktop.Notifications`](https://specifications.freedesktop.org/notification-spec/notification-spec-latest.html)
 - [libdbus-1.so](https://www.freedesktop.org/wiki/Software/dbus/) installed in your system
 - [Linux libc](https://en.wikipedia.org/wiki/C_standard_library) via either [glibc](https://www.gnu.org/software/libc/) or [musl libc](https://musl.libc.org/)

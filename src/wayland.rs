@@ -7,11 +7,6 @@ use wayland_protocols::ext::idle_notify::v1::client::{
 
 use crate::CONFIG;
 
-// TODO: Simplify type.
-enum IdleInterface {
-    IdleNotifier(ext_idle_notifier_v1::ExtIdleNotifierV1),
-}
-
 #[derive(Debug, Eq, PartialEq)]
 pub enum Signal {
     Idled,
@@ -19,14 +14,14 @@ pub enum Signal {
 }
 
 pub struct State {
-    idle_interface: Option<IdleInterface>,
+    idle_notifier: Option<ext_idle_notifier_v1::ExtIdleNotifierV1>,
     signal_sender: mpsc::SyncSender<Signal>,
 }
 
 impl State {
     pub const fn new(signal_sender: mpsc::SyncSender<Signal>) -> Self {
         Self {
-            idle_interface: None,
+            idle_notifier: None,
             signal_sender,
         }
     }
@@ -37,7 +32,7 @@ impl wayland_client::Dispatch<wl_registry::WlRegistry, ()> for State {
         state: &mut Self,
         registry: &wl_registry::WlRegistry,
         event: wl_registry::Event,
-        &(): &(),
+        _data: &(),
         _conn: &wayland_client::Connection,
         queue_handle: &wayland_client::QueueHandle<Self>,
     ) {
@@ -49,20 +44,17 @@ impl wayland_client::Dispatch<wl_registry::WlRegistry, ()> for State {
                 "wl_seat" => {
                     registry.bind::<wl_seat::WlSeat, _, _>(name, 1, queue_handle, ());
                 }
-                // First one to be offered by the compositor will be used.
                 "ext_idle_notifier_v1" => {
-                    if state.idle_interface.is_none() {
-                        state.idle_interface = Some(IdleInterface::IdleNotifier(
-                            registry.bind::<ext_idle_notifier_v1::ExtIdleNotifierV1, _, _>(
-                                name,
-                                1,
-                                queue_handle,
-                                (),
-                            ),
-                        ));
+                    state.idle_notifier = Some(
+                        registry.bind::<ext_idle_notifier_v1::ExtIdleNotifierV1, _, _>(
+                            name,
+                            1,
+                            queue_handle,
+                            (),
+                        ),
+                    );
 
-                        eprintln!("Binded to ext_idle_notifier_v1");
-                    }
+                    eprintln!("Binded to ext_idle_notifier_v1");
                 }
                 _ => {}
             }
@@ -75,21 +67,19 @@ impl wayland_client::Dispatch<wl_seat::WlSeat, ()> for State {
         state: &mut Self,
         seat: &wl_seat::WlSeat,
         _event: wl_seat::Event,
-        &(): &(),
+        _data: &(),
         _conn: &wayland_client::Connection,
         queue_handle: &wayland_client::QueueHandle<Self>,
     ) {
-        if let Some(idle_interface) = &state.idle_interface {
-            match idle_interface {
-                IdleInterface::IdleNotifier(idle_notifier) => {
-                    idle_notifier.get_idle_notification(
-                        CONFIG.timer.idle_timeout * 1000, // milli seconds
-                        seat,
-                        queue_handle,
-                        (),
-                    );
-                }
-            }
+        if let Some(idle_notifier) = &state.idle_notifier {
+            idle_notifier.get_idle_notification(
+                CONFIG.timer.idle_timeout * 1000, // milli seconds
+                seat,
+                queue_handle,
+                (),
+            );
+
+            eprintln!("Created ext_idle_notification_v1");
         }
     }
 }
@@ -112,7 +102,7 @@ impl wayland_client::Dispatch<ext_idle_notification_v1::ExtIdleNotificationV1, (
         state: &mut Self,
         _idle_notification: &ext_idle_notification_v1::ExtIdleNotificationV1,
         event: ext_idle_notification_v1::Event,
-        &(): &(),
+        _data: &(),
         _conn: &wayland_client::Connection,
         _queue_handle: &wayland_client::QueueHandle<Self>,
     ) {

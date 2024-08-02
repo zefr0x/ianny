@@ -129,24 +129,6 @@ fn main() {
     // timer loop cycle for an aleady resumed idle state.
     let (signal_sender, signal_receiver) = mpsc::sync_channel(2);
 
-    // Create main state for the app to store shared things.
-    let mut state = wayland::State::new(signal_sender);
-
-    // Connect to Wayland server
-    let conn = wayland_client::Connection::connect_to_env()
-        .expect("Not able to detect a wayland compositor");
-
-    let mut event_queue = conn.new_event_queue::<wayland::State>();
-    let queue_handle = event_queue.handle();
-
-    let display = conn.display();
-
-    let _registry = display.get_registry(&queue_handle, ());
-
-    event_queue
-        .roundtrip(&mut state)
-        .expect("Failed to cause a synchronous round trip with the wayland server");
-
     // Timer thread
     std::thread::spawn(move || {
         let pause_duration = core::cmp::min(
@@ -214,6 +196,24 @@ fn main() {
             }
         }
     });
+
+    // Connect to Wayland server
+    let conn = wayland_client::Connection::connect_to_env()
+        .expect("Not able to detect a wayland compositor");
+
+    let mut event_queue = conn.new_event_queue::<wayland::State>();
+    let queue_handle = event_queue.handle();
+
+    let display = conn.display();
+
+    let _registry = display.get_registry(&queue_handle, ());
+
+    // Create main state for the app to store shared things.
+    let mut state = wayland::State::new(signal_sender);
+
+    event_queue
+        .roundtrip(&mut state)
+        .expect("Failed to cause a synchronous round trip with the wayland server");
 
     // Main loop.
     loop {
