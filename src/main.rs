@@ -47,7 +47,7 @@ fn show_break_notification(break_time: Duration, notification_sound_hint: notify
             message,
             " <b>{} {}</b>",
             seconds,
-            &ngettext("second", "seconds", u32::try_from(minutes).unwrap())
+            &ngettext("second", "seconds", u32::try_from(seconds).unwrap())
         )
         .unwrap();
     };
