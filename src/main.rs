@@ -5,6 +5,7 @@ use core::{fmt::Write, ops::AddAssign, time::Duration};
 use std::{
     env,
     sync::{mpsc, LazyLock},
+    time::Instant,
 };
 
 use gettextrs::{gettext, ngettext};
@@ -20,7 +21,12 @@ static CONFIG: LazyLock<config::Config> = LazyLock::new(|| {
     config
 });
 
-fn show_break_notification(break_time: Duration, notification_sound_hint: notify_rust::Hint) {
+/// Display a break notification for specific duration than return the real system time it toke
+/// while displaying this notification.
+fn show_break_notification(
+    break_time: Duration,
+    notification_sound_hint: notify_rust::Hint,
+) -> Duration {
     use notify_rust::{Hint, Notification, Timeout, Urgency};
 
     let minutes = break_time.as_secs() / 60;
@@ -63,34 +69,42 @@ fn show_break_notification(break_time: Duration, notification_sound_hint: notify
         .show()
         .expect("Failed to send notification");
 
-    if CONFIG.notification.show_progress_bar {
-        #[allow(clippy::cast_precision_loss)]
-        let step =
-            CONFIG.notification.minimum_update_delay as f64 / break_time.as_secs_f64() * 100.0_f64;
-        let step_duration = Duration::from_secs(CONFIG.notification.minimum_update_delay);
+    let mut last_time = Instant::now();
+    let mut accumulative_time = Duration::from_secs(0);
+    #[expect(clippy::cast_precision_loss, reason = "Working with small numbers")]
+    let step =
+        CONFIG.notification.minimum_update_delay as f64 / break_time.as_secs_f64() * 100.0_f64;
+    let step_duration = Duration::from_secs(CONFIG.notification.minimum_update_delay);
 
-        let mut i: f64 = 0.0;
+    let mut i: f64 = 0.0;
 
-        #[allow(clippy::while_float)]
-        while i < 100.0_f64 {
-            std::thread::sleep(step_duration);
+    #[expect(clippy::while_float, reason = "Precision is not an issue")]
+    while i < 100.0_f64 {
+        std::thread::sleep(step_duration);
+        let last_time_copy = last_time;
+        last_time = Instant::now();
+        let time_diff = Instant::now().duration_since(last_time_copy);
 
-            i += step;
+        accumulative_time += time_diff;
 
+        i += step * time_diff.div_duration_f64(step_duration);
+
+        if CONFIG.notification.show_progress_bar {
             // FIX: Floating point problems leads to update when not needed.
             // HACK: The f64 data type is used to minimize the impact.
-            #[allow(clippy::cast_possible_truncation)]
+            #[expect(clippy::cast_possible_truncation, reason = "Truncation is intentional")]
             if (i as i32) != ((i - step) as i32) {
                 // Progress bar update
                 handle.hint(Hint::CustomInt("value".to_owned(), i as i32));
-                handle.update();
             }
         }
-    } else {
-        std::thread::sleep(break_time);
+
+        handle.update();
     }
 
     handle.close();
+
+    accumulative_time
 }
 
 fn main() {
@@ -141,14 +155,31 @@ fn main() {
 
         let mut short_time_pased = 0; // secands
         let mut long_time_pased = 0; // secands
+        let mut last_time = Instant::now();
 
         // TODO: Handle separate idle timeout for both long and short timers.
 
         // Timer loop.
         loop {
             std::thread::sleep(Duration::from_secs(pause_duration));
-            short_time_pased.add_assign(pause_duration);
-            long_time_pased.add_assign(pause_duration);
+            // NOTE: Get around being freezed after calculating time_diff
+            // and before resetting last_time. Since the time between will
+            // be droped without having it in the next clalculations.
+            let last_time_copy = last_time;
+            last_time = Instant::now();
+
+            let time_diff = Instant::now().duration_since(last_time_copy).as_secs();
+
+            if time_diff - pause_duration >= u64::from(CONFIG.timer.idle_timeout) {
+                long_time_pased = 0;
+                short_time_pased = 0;
+                last_time = Instant::now();
+
+                eprintln!("Timer resetted since idle happend while process was suspended");
+            } else {
+                short_time_pased.add_assign(time_diff);
+                long_time_pased.add_assign(time_diff);
+            }
 
             if signal_receiver
                 .try_recv()
@@ -166,6 +197,7 @@ fn main() {
                 // Reset timers.
                 long_time_pased = 0;
                 short_time_pased = 0;
+                last_time = Instant::now();
 
                 eprintln!("Timer resetted");
             } else if long_time_pased >= CONFIG.timer.long_break_timeout {
@@ -181,18 +213,28 @@ fn main() {
                 // Reset timers.
                 long_time_pased = 0;
                 short_time_pased = 0;
+                last_time = Instant::now();
             } else if short_time_pased >= CONFIG.timer.short_break_timeout {
                 eprintln!("Short break starts");
 
-                show_break_notification(
+                if show_break_notification(
                     Duration::from_secs(CONFIG.timer.short_break_duration),
                     notify_rust::Hint::SoundName("suspend-error".to_owned()), // Name or file
-                );
+                )
+                .as_secs()
+                    - CONFIG.timer.short_break_duration
+                    >= u64::from(CONFIG.timer.idle_timeout)
+                {
+                    long_time_pased = 0;
+
+                    eprintln!("Long break timer resetted since idle happend during short break");
+                }
 
                 eprintln!("Short break ends");
 
                 // Reset timer.
                 short_time_pased = 0;
+                last_time = Instant::now();
             }
         }
     });
@@ -214,6 +256,8 @@ fn main() {
     event_queue
         .roundtrip(&mut state)
         .expect("Failed to cause a synchronous round trip with the wayland server");
+
+    // TODO: Make it a single threaded application.
 
     // Main loop.
     loop {
