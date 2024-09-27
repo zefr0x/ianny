@@ -1,6 +1,9 @@
 use std::sync::mpsc;
 
-use wayland_client::protocol::{wl_registry, wl_seat};
+use wayland_client::{
+    protocol::{wl_registry, wl_seat},
+    Proxy,
+};
 use wayland_protocols::ext::idle_notify::v1::client::{
     ext_idle_notification_v1, ext_idle_notifier_v1,
 };
@@ -46,22 +49,22 @@ impl wayland_client::Dispatch<wl_registry::WlRegistry, ()> for State {
             } => match interface.as_str() {
                 "wl_seat" => {
                     // TODO: Support newest version of wl_seat.
-                    registry.bind::<wl_seat::WlSeat, _, _>(name, 1, queue_handle, ());
+                    let wl_seat = registry.bind::<wl_seat::WlSeat, _, _>(name, 1, queue_handle, ());
 
-                    eprintln!("Binded to wl_seat");
+                    eprintln!("Binded to {}", wl_seat.id());
                 }
                 "ext_idle_notifier_v1" => {
-                    state.idle_notifier = Some((
-                        name,
-                        registry.bind::<ext_idle_notifier_v1::ExtIdleNotifierV1, _, _>(
+                    let idle_notifier = registry
+                        .bind::<ext_idle_notifier_v1::ExtIdleNotifierV1, _, _>(
                             name,
                             1,
                             queue_handle,
                             (),
-                        ),
-                    ));
+                        );
 
-                    eprintln!("Binded to ext_idle_notifier_v1");
+                    eprintln!("Binded to {}", idle_notifier.id());
+
+                    state.idle_notifier = Some((name, idle_notifier));
                 }
                 _ => {}
             },
@@ -98,14 +101,16 @@ impl wayland_client::Dispatch<wl_seat::WlSeat, ()> for State {
     ) {
         // FIX: Support multiseat configuration.
         if let Some((_, idle_notifier)) = &state.idle_notifier {
-            state.idle_notification = Some(idle_notifier.get_idle_notification(
+            let idle_notification = idle_notifier.get_idle_notification(
                 CONFIG.timer.idle_timeout * 1000, // milli seconds
                 seat,
                 queue_handle,
                 (),
-            ));
+            );
 
-            eprintln!("Created ext_idle_notification_v1");
+            eprintln!("Created {}", idle_notification.id());
+
+            state.idle_notification = Some(idle_notification);
         }
     }
 }
