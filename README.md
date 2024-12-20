@@ -53,6 +53,9 @@ You can find the latest GitHub release [here](https://github.com/zefr0x/ianny/re
 > [!Note]
 > You need to have [`cargo`](https://doc.rust-lang.org/cargo/), [`meson`](https://mesonbuild.com/) and [`libdbus-1-dev`](https://www.freedesktop.org/wiki/Software/dbus/) installed in your system.
 
+> [!NOTE]
+> For cross compilation you will need to set the `rustc_target` meson option, and create [`.cargo/config.toml`](https://doc.rust-lang.org/cargo/reference/config.html) file to set a `linker` to be used for your target.
+
 ```shell
 git clone https://github.com/zefr0x/ianny.git
 
@@ -66,9 +69,6 @@ meson compile -C builddir
 ```
 
 You will find the binary in `./builddir/src/ianny`
-
-> [!NOTE]
-> For cross compilation you will need to set the `rustc_target` meson option, and create [`.cargo/config.toml`](https://doc.rust-lang.org/cargo/reference/config.html) file to set a `linker` to be used for your target.
 
 To install:
 
