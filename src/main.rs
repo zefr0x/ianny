@@ -107,7 +107,7 @@ fn show_break_notification(
     accumulative_time
 }
 
-fn main() {
+fn main() -> ! {
     // Check if the app is already running
     let app_instance = SingleInstance::new(APP_ID).unwrap();
     if !app_instance.is_single() {
