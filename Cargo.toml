@@ -16,13 +16,13 @@ codegen-units = 1
 
 [dependencies]
 gcd = "2.3.0"
-gettext-rs = { version = "0.7.0", features = ["gettext-system"] }
-notify-rust = { version = "4.11.0", default-features = false, features = ["d"] }
-serde = { version = "1.0.204", features = ["derive"] }
+gettext-rs = { version = "0.7.2", features = ["gettext-system"] }
+notify-rust = { version = "4.11.3", default-features = false, features = ["d"] }
+serde = { version = "1.0.217", features = ["derive"] }
 single-instance = "0.3.3"
-toml = "0.8.14"
-wayland-client = "0.31.4"
-wayland-protocols = { version = "0.32.2", features = ["client", "staging"] }
+toml = "0.8.19"
+wayland-client = "0.31.7"
+wayland-protocols = { version = "0.32.5", features = ["client", "staging"] }
 xdg = "2.5.2"
 
 # TODO: Consider commented lints when they are stable.
