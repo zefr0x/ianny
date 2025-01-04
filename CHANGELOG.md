@@ -1,5 +1,15 @@
 # Unreleased
 
+# 2.0.0
+
+## Breaking Changes
+
+- Remove support for deprecated [`org_kde_kwin_idle`](https://wayland.app/protocols/kde-idle) wayland protocol.
+
+## Fixed
+
+- Relay on system time, not just thread sleeping. Now the timer will make progress even while the device is suspended.
+
 # 1.0.0
 
 ## Fixed
