@@ -181,10 +181,7 @@ fn main() -> ! {
                 long_time_pased.add_assign(time_diff);
             }
 
-            if signal_receiver
-                .try_recv()
-                .map_or(false, |signal| signal == wayland::Signal::Idled)
-            {
+            if signal_receiver.try_recv() == Ok(wayland::Signal::Idled) {
                 // NOTE: If both idle and resume happend right here,
                 // resume will be droped and a race condition will happen in the next loop.
 

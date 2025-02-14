@@ -88,6 +88,8 @@ The config file is `$XDG_CONFIG_HOME/io.github.zefr0x.ianny/config.toml` or by d
 
 ```toml
 [timer]
+# Enabling this will only consider user input alone for idle state, e.g. you will not have breaks when watching videos or playing music without any user input.
+ignore_idle_inhibitors = false
 # Timer will stop and reset when you are idle for this amount of seconds.
 idle_timeout = 240
 # Active duration that activates a break.

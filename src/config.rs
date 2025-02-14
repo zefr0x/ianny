@@ -19,6 +19,7 @@ pub struct Notification {
 #[derive(Debug, serde::Deserialize)]
 #[serde(default)]
 pub struct Timer {
+    pub ignore_idle_inhibitors: bool,
     pub idle_timeout: u32,         // Seconds
     pub short_break_timeout: u64,  // Seconds
     pub long_break_timeout: u64,   // Seconds
@@ -38,6 +39,7 @@ impl Default for Notification {
 impl Default for Timer {
     fn default() -> Self {
         Self {
+            ignore_idle_inhibitors: false,
             idle_timeout: 240,         // Seconds (7 minutes)
             short_break_timeout: 1200, // Seconds (20 minutes)
             long_break_timeout: 3840,  // Seconds (64 minutes)
