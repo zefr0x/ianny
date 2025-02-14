@@ -45,11 +45,11 @@ impl wayland_client::Dispatch<wl_registry::WlRegistry, ()> for State {
     ) {
         match event {
             wl_registry::Event::Global {
-                name, interface, ..
+                name, interface, version
             } => match interface.as_str() {
                 "wl_seat" => {
                     // TODO: Support newest version of wl_seat.
-                    let wl_seat = registry.bind::<wl_seat::WlSeat, _, _>(name, 1, queue_handle, ());
+                    let wl_seat = registry.bind::<wl_seat::WlSeat, _, _>(name, version, queue_handle, ());
 
                     eprintln!("Binded to {}", wl_seat.id());
                 }
@@ -57,7 +57,7 @@ impl wayland_client::Dispatch<wl_registry::WlRegistry, ()> for State {
                     let idle_notifier = registry
                         .bind::<ext_idle_notifier_v1::ExtIdleNotifierV1, _, _>(
                             name,
-                            1,
+                            version,
                             queue_handle,
                             (),
                         );
@@ -101,12 +101,33 @@ impl wayland_client::Dispatch<wl_seat::WlSeat, ()> for State {
     ) {
         // FIX: Support multiseat configuration.
         if let Some((_, idle_notifier)) = &state.idle_notifier {
-            let idle_notification = idle_notifier.get_idle_notification(
-                CONFIG.timer.idle_timeout * 1000, // milli seconds
-                seat,
-                queue_handle,
-                (),
-            );
+	    let idle_timeout_in_ms = CONFIG.timer.idle_timeout * 1000;  // milli seconds
+	    let idle_notifier_ver = idle_notifier.version();
+
+	    eprintln!("Idle notifier version: {}", idle_notifier_ver);
+
+            let idle_notification =
+		if idle_notifier_ver < ext_idle_notifier_v1::REQ_GET_INPUT_IDLE_NOTIFICATION_SINCE {
+		    eprintln!("Falling back to version of ext-idle-notify-v1 protocol \
+			       that does not support ignoring idle inhibitors");
+
+		    idle_notifier.get_idle_notification(
+			idle_timeout_in_ms,
+			seat,
+			queue_handle,
+			(),
+		    )
+		} else {
+		    eprintln!("Using version of ext-idle-notify-v1 protocol that \
+			       supports ignoring idle inhibitors");
+
+		    idle_notifier.get_input_idle_notification(
+			idle_timeout_in_ms,
+			seat,
+			queue_handle,
+			(),
+		    )
+		};
 
             eprintln!("Created {}", idle_notification.id());
 
