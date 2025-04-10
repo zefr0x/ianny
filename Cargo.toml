@@ -17,8 +17,13 @@ codegen-units = 1
 [dependencies]
 gcd = "2.3.0"
 gettext-rs = { version = "0.7.2", features = ["gettext-system"] }
+log = "0.4.27"
 notify-rust = { version = "4.11.7", default-features = false, features = ["d"] }
 serde = { version = "1.0.219", features = ["derive"] }
+simple_logger = { version = "5.0.0", default-features = false, features = [
+  "colors",
+  "stderr",
+] }
 single-instance = "0.3.3"
 toml = "0.8.20"
 wayland-client = "0.31.8"
@@ -75,6 +80,8 @@ multiple_unsafe_ops_per_block = "deny"
 mutex_atomic = "warn"
 # TODO: Enable after false-positive is solved (https://github.com/rust-lang/rust-clippy/issues/9378)
 # pattern_type_mismatch = "warn"
+print_stderr = "warn"
+print_stdout = "warn"
 pub_with_shorthand = "warn"
 rc_buffer = "warn"
 rc_mutex = "deny"

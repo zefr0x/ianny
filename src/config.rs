@@ -1,6 +1,4 @@
-extern crate serde;
-extern crate toml;
-extern crate xdg;
+use log::info;
 
 #[derive(Default, Debug, serde::Deserialize)]
 #[serde(default)]
@@ -56,7 +54,7 @@ impl Config {
         toml::from_str(&std::fs::read_to_string(&config_file).map_or_else(
             |_| String::new(),
             |content| {
-                eprintln!("Read config from: {}", &config_file.to_string_lossy());
+                info!("Read config from: {}", &config_file.to_string_lossy());
                 content
             },
         ))

@@ -1,8 +1,9 @@
 use std::sync::mpsc;
 
+use log::{error, info, trace};
 use wayland_client::{
-    protocol::{wl_registry, wl_seat},
     Proxy,
+    protocol::{wl_registry, wl_seat},
 };
 use wayland_protocols::ext::idle_notify::v1::client::{
     ext_idle_notification_v1, ext_idle_notifier_v1,
@@ -48,41 +49,44 @@ impl wayland_client::Dispatch<wl_registry::WlRegistry, ()> for State {
                 name,
                 interface,
                 version,
-            } => match interface.as_str() {
-                "wl_seat" => {
-                    // TODO: Support newest version of wl_seat.
-                    let wl_seat = registry.bind::<wl_seat::WlSeat, _, _>(name, 1, queue_handle, ());
+            } => {
+                match interface.as_str() {
+                    "wl_seat" => {
+                        // TODO: Support newest version of wl_seat.
+                        let wl_seat =
+                            registry.bind::<wl_seat::WlSeat, _, _>(name, 1, queue_handle, ());
 
-                    eprintln!("Binded to {}", wl_seat.id());
+                        trace!("Binded to {}", wl_seat.id());
+                    }
+                    "ext_idle_notifier_v1" => {
+                        let idle_notifier = registry
+                            .bind::<ext_idle_notifier_v1::ExtIdleNotifierV1, _, _>(
+                                name,
+                                version,
+                                queue_handle,
+                                (),
+                            );
+
+                        trace!("Binded to {}", idle_notifier.id());
+
+                        state.idle_notifier = Some((name, idle_notifier));
+                    }
+                    _ => {}
                 }
-                "ext_idle_notifier_v1" => {
-                    let idle_notifier = registry
-                        .bind::<ext_idle_notifier_v1::ExtIdleNotifierV1, _, _>(
-                            name,
-                            version,
-                            queue_handle,
-                            (),
-                        );
-
-                    eprintln!("Binded to {}", idle_notifier.id());
-
-                    state.idle_notifier = Some((name, idle_notifier));
-                }
-                _ => {}
-            },
+            }
             wl_registry::Event::GlobalRemove { name } => {
                 if let Some((idle_notifier_name, idle_notifier)) = &state.idle_notifier {
                     if name == *idle_notifier_name {
                         idle_notifier.destroy();
                         state.idle_notifier = None;
 
-                        eprintln!("Destroyed ext_idle_notifier_v1");
+                        trace!("Destroyed ext_idle_notifier_v1");
 
                         if let Some(idle_notification) = &state.idle_notification {
                             idle_notification.destroy();
                             state.idle_notification = None;
 
-                            eprintln!("Destroyed ext_idle_notification_v1");
+                            trace!("Destroyed ext_idle_notification_v1");
                         }
                     }
                 }
@@ -112,15 +116,15 @@ impl wayland_client::Dispatch<wl_seat::WlSeat, ()> for State {
                 idle_notifier.get_input_idle_notification(idle_timeout, seat, queue_handle, ())
             } else {
                 if CONFIG.timer.ignore_idle_inhibitors {
-                    eprintln!(
-                    "Failed to ignore idle inhibitors, your wayland compositor's idle notifier does not support this feature."
-                );
+                    error!(
+                        "Failed to ignore idle inhibitors, your wayland compositor's idle notifier does not support this feature."
+                    );
                 }
 
                 idle_notifier.get_idle_notification(idle_timeout, seat, queue_handle, ())
             };
 
-            eprintln!("Created {}", idle_notification.id());
+            trace!("Created {}", idle_notification.id());
 
             state.idle_notification = Some(idle_notification);
         }
@@ -151,7 +155,7 @@ impl wayland_client::Dispatch<ext_idle_notification_v1::ExtIdleNotificationV1, (
     ) {
         match event {
             ext_idle_notification_v1::Event::Idled => {
-                eprintln!("Idled");
+                info!("Idled");
 
                 match state.signal_sender.try_send(Signal::Idled) {
                     Ok(()) | Err(mpsc::TrySendError::Full(_)) => (),
@@ -161,7 +165,7 @@ impl wayland_client::Dispatch<ext_idle_notification_v1::ExtIdleNotificationV1, (
                 }
             }
             ext_idle_notification_v1::Event::Resumed => {
-                eprintln!("Resumed");
+                info!("Resumed");
 
                 match state.signal_sender.try_send(Signal::Resumed) {
                     Ok(()) | Err(mpsc::TrySendError::Full(_)) => (),

@@ -4,11 +4,12 @@ mod wayland;
 use core::{fmt::Write, ops::AddAssign, time::Duration};
 use std::{
     env,
-    sync::{mpsc, LazyLock},
+    sync::{LazyLock, mpsc},
     time::Instant,
 };
 
 use gettextrs::{gettext, ngettext};
+use log::{error, info};
 use single_instance::SingleInstance;
 
 const APP_ID: &str = "io.github.zefr0x.ianny";
@@ -16,7 +17,7 @@ const APP_ID: &str = "io.github.zefr0x.ianny";
 static CONFIG: LazyLock<config::Config> = LazyLock::new(|| {
     let config = config::Config::load();
 
-    eprintln!("{:?}", &config);
+    info!("{:?}", &config);
 
     config
 });
@@ -56,7 +57,7 @@ fn show_break_notification(
             &ngettext("second", "seconds", u32::try_from(seconds).unwrap())
         )
         .unwrap();
-    };
+    }
 
     let mut handle = Notification::new()
         .summary(&gettext("Break Time!"))
@@ -108,10 +109,12 @@ fn show_break_notification(
 }
 
 fn main() -> ! {
+    simple_logger::SimpleLogger::new().init().unwrap();
+
     // Check if the app is already running
     let app_instance = SingleInstance::new(APP_ID).unwrap();
     if !app_instance.is_single() {
-        eprintln!("{APP_ID} is already running.");
+        error!("{APP_ID} is already running.");
         std::process::exit(1);
     }
 
@@ -119,8 +122,7 @@ fn main() -> ! {
     let app_lang = gettextrs::setlocale(
         gettextrs::LocaleCategory::LcAll,
         env::var("LC_ALL").unwrap_or_else(|_| {
-            env::var("LC_CTYPE")
-                .unwrap_or_else(|_| env::var("LANG").unwrap_or_else(|_| "en_US.UTF-8".to_owned()))
+            env::var("LC_CTYPE").unwrap_or_else(|_| env::var("LANG").unwrap_or_default())
         }),
     )
     .expect("Failed to set locale, please use a valid system locale and make sure it's enabled");
@@ -129,7 +131,7 @@ fn main() -> ! {
     gettextrs::bindtextdomain(APP_ID, "/usr/share/locale").unwrap();
     gettextrs::bind_textdomain_codeset(APP_ID, "UTF-8").unwrap();
 
-    eprintln!("Application locale: {}", String::from_utf8_lossy(&app_lang));
+    info!("Application locale: {}", String::from_utf8_lossy(&app_lang));
 
     // Sync channel to share the idle/active state with the timer
     //
@@ -175,7 +177,7 @@ fn main() -> ! {
                 short_time_pased = 0;
                 last_time = Instant::now();
 
-                eprintln!("Timer resetted since idle happend while process was suspended");
+                info!("Timer resetted since idle happend while process was suspended");
             } else {
                 short_time_pased.add_assign(time_diff);
                 long_time_pased.add_assign(time_diff);
@@ -196,23 +198,23 @@ fn main() -> ! {
                 short_time_pased = 0;
                 last_time = Instant::now();
 
-                eprintln!("Timer resetted");
+                info!("Timer resetted");
             } else if long_time_pased >= CONFIG.timer.long_break_timeout {
-                eprintln!("Long break starts");
+                info!("Long break starts");
 
                 show_break_notification(
                     Duration::from_secs(CONFIG.timer.long_break_duration),
                     notify_rust::Hint::SoundName("suspend-error".to_owned()), // Name or file
                 );
 
-                eprintln!("Long break ends");
+                info!("Long break ends");
 
                 // Reset timers.
                 long_time_pased = 0;
                 short_time_pased = 0;
                 last_time = Instant::now();
             } else if short_time_pased >= CONFIG.timer.short_break_timeout {
-                eprintln!("Short break starts");
+                info!("Short break starts");
 
                 if show_break_notification(
                     Duration::from_secs(CONFIG.timer.short_break_duration),
@@ -224,10 +226,10 @@ fn main() -> ! {
                 {
                     long_time_pased = 0;
 
-                    eprintln!("Long break timer resetted since idle happend during short break");
+                    info!("Long break timer resetted since idle happend during short break");
                 }
 
-                eprintln!("Short break ends");
+                info!("Short break ends");
 
                 // Reset timer.
                 short_time_pased = 0;
