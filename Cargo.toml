@@ -2,7 +2,7 @@
 name = "ianny"
 version = "2.0.0"
 authors = ["zefr0x"]
-edition = "2021"
+edition = "2024"
 description = "Desktop utility that helps preventing repetitive strain injuries by keeping track of usage patterns and periodically informing user to take breaks"
 readme = "README.md"
 homepage = "https://github.com/zefr0x/ianny"
@@ -17,10 +17,10 @@ codegen-units = 1
 [dependencies]
 gcd = "2.3.0"
 gettext-rs = { version = "0.7.2", features = ["gettext-system"] }
-notify-rust = { version = "4.11.3", default-features = false, features = ["d"] }
-serde = { version = "1.0.217", features = ["derive"] }
+notify-rust = { version = "4.11.7", default-features = false, features = ["d"] }
+serde = { version = "1.0.219", features = ["derive"] }
 single-instance = "0.3.3"
-toml = "0.8.19"
+toml = "0.8.20"
 wayland-client = "0.31.8"
 wayland-protocols = { version = "0.32.6", features = ["client", "staging"] }
 xdg = "2.5.2"
