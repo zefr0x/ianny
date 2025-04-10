@@ -7,6 +7,8 @@
 #   https://github.com/rhino-linux/rhino-setup/blob/master/.github/workflows/package.yml
 
 name: release
+permissions:
+  "contents": "write"
 on:
   push:
     tags:
