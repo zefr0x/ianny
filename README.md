@@ -38,9 +38,9 @@ Simple, light-weight, easy to use, and effective [Linux](https://en.wikipedia.or
 
 All packages are available on AUR, you can:
 
-- build locally from latest stable release: [ianny](https://aur.archlinux.org/packages/ianny)
-- build locally from latest Git commit: [ianny-git](https://aur.archlinux.org/packages/ianny-git)
-- use the binary built by GitHub: [ianny-bin](https://aur.archlinux.org/packages/ianny-bin)
+- Build locally from latest stable release: [ianny](https://aur.archlinux.org/packages/ianny)
+- Build locally from latest Git commit: [ianny-git](https://aur.archlinux.org/packages/ianny-git)
+- Use the binary built by GitHub: [ianny-bin](https://aur.archlinux.org/packages/ianny-bin)
 
 ### Download Binary From GitHub
 
@@ -78,7 +78,7 @@ meson install -C builddir
 
 # Usage
 
-You just need to execute the binary eather directly or by enabling it to auto start with your desktop environment's settings, since it provides a `.desktop` file for auto-start.
+You just need to execute the binary either directly or by enabling it to auto start with your desktop environment's settings, since it provides a `.desktop` file for auto-start.
 
 # Config
 
@@ -112,7 +112,7 @@ minimum_update_delay = 1
 
 Q: What does `Ianny` mean?
 
-- It is an Arabic word `عَيْنِي` that could be translated to `My Eye` in english.
+- It is an Arabic word `عَيْنِي` that could be translated to `My Eye` in English.
 
 ## Inspired by
 

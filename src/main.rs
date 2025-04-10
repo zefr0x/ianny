@@ -138,11 +138,11 @@ fn main() -> ! {
     // NOTE: Both idle and resume can happen during a break or timer pause,
     // so we need to buffer two messages in order to catch both.
     // Also we should guarantee that the main thread is not blocked
-    // (only buffer two messages, and drop any new ones till proccessed),
+    // (only buffer two messages, and drop any new ones till processed),
     // and we must handle both messages sequentially before catching new pair
     // (one idle signal must be followed by at least one resume signal).
     // By limiting the buffer to two messages we also avoid repeating the
-    // timer loop cycle for an aleady resumed idle state.
+    // timer loop cycle for an already resumed idle state.
     let (signal_sender, signal_receiver) = mpsc::sync_channel(2);
 
     // Timer thread
@@ -153,10 +153,10 @@ fn main() -> ! {
                 CONFIG.timer.long_break_timeout,
             ), // Calculate GCD
             u64::from(CONFIG.timer.idle_timeout) + 1, // NOTE: Extra one second to make sure
-        ); // secands
+        ); // seconds
 
-        let mut short_time_pased = 0; // secands
-        let mut long_time_pased = 0; // secands
+        let mut short_time_pased = 0; // seconds
+        let mut long_time_pased = 0; // seconds
         let mut last_time = Instant::now();
 
         // TODO: Handle separate idle timeout for both long and short timers.
@@ -164,9 +164,9 @@ fn main() -> ! {
         // Timer loop.
         loop {
             std::thread::sleep(Duration::from_secs(pause_duration));
-            // NOTE: Get around being freezed after calculating time_diff
-            // and before resetting last_time. Since the time between will
-            // be droped without having it in the next clalculations.
+            // NOTE: Get around freezing after calculating time_diff and
+            // before resetting last_time. Since the time between will
+            // be dropped without having it in the next calculations.
             let last_time_copy = last_time;
             last_time = Instant::now();
 
@@ -184,8 +184,8 @@ fn main() -> ! {
             }
 
             if signal_receiver.try_recv() == Ok(wayland::Signal::Idled) {
-                // NOTE: If both idle and resume happend right here,
-                // resume will be droped and a race condition will happen in the next loop.
+                // NOTE: If both idle and resume happen right here,
+                // resume will be dropped and a race condition will happen in the next loop.
 
                 // Wait for change, when user resume from idle.
                 assert_eq!(signal_receiver.recv().unwrap(), wayland::Signal::Resumed);

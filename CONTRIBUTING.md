@@ -7,12 +7,12 @@ For now [GitHub Bug Traker](https://github.com/zefr0x/ianny/issues) is used for 
 ## Development
 
 - The `stable` [Rust](https://www.rust-lang.org/) programming language is used mainly in this project.
-- Dependencies managment handled using [Cargo](https://doc.rust-lang.org/stable/cargo/).
+- Dependencies management handled using [Cargo](https://doc.rust-lang.org/stable/cargo/).
 - Building handled using [Meson](https://mesonbuild.com/)
 
 ### Style
 
-- You should document every thing to keep the code easy for reading. Every file, every function and any line that need a comment.
+- You should document every thing to keep the code easy for reading. Every file, every function, and any line that need a comment.
 
 #### Setup `pre-commit`
 
@@ -24,7 +24,7 @@ First install it:
 pip install pre-commit
 ```
 
-> It's better to use you OS's package manager to install it.
+> It's better to use your OS's package manager to install it.
 
 Then add it as a git hook while you are inside the repository:
 

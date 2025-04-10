@@ -107,7 +107,7 @@ impl wayland_client::Dispatch<wl_seat::WlSeat, ()> for State {
     ) {
         // FIX: Support multiseat configuration.
         if let Some((_, idle_notifier)) = &state.idle_notifier {
-            let idle_timeout = CONFIG.timer.idle_timeout * 1000; // milli seconds
+            let idle_timeout = CONFIG.timer.idle_timeout * 1000; // milliseconds
 
             let idle_notification = if CONFIG.timer.ignore_idle_inhibitors
                 && idle_notifier.version()
