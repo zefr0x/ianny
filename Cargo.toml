@@ -25,7 +25,7 @@ simple_logger = { version = "5.0.0", default-features = false, features = [
   "stderr",
 ] }
 single-instance = "0.3.3"
-toml = "0.8.20"
+toml = "0.8.21"
 wayland-client = "0.31.8"
 wayland-protocols = { version = "0.32.6", features = ["client", "staging"] }
 xdg = "2.5.2"
