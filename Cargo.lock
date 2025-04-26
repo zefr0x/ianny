@@ -186,7 +186,7 @@ checksum = "bf151400ff0baff5465007dd2f3e717f3fe502074ca563069ce3a6629d07b289"
 
 [[package]]
 name = "ianny"
-version = "2.0.0"
+version = "2.1.0"
 dependencies = [
  "gcd",
  "gettext-rs",
