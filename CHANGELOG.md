@@ -1,5 +1,15 @@
 # Unreleased
 
+# 2.1.0
+
+## Added
+
+- Add option to ignore idle inhibitors
+
+## Improved
+
+- Prettier and classified log messages.
+
 # 2.0.0
 
 ## Breaking Changes
