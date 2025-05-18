@@ -109,6 +109,13 @@ impl wayland_client::Dispatch<wl_seat::WlSeat, ()> for State {
         if let Some((_, idle_notifier)) = &state.idle_notifier {
             let idle_timeout = CONFIG.timer.idle_timeout * 1000; // milliseconds
 
+            if let Some(idle_notification) = &state.idle_notification {
+                idle_notification.destroy();
+                state.idle_notification = None;
+
+                trace!("Destroyed ext_idle_notification_v1");
+            }
+
             let idle_notification = if CONFIG.timer.ignore_idle_inhibitors
                 && idle_notifier.version()
                     > ext_idle_notifier_v1::REQ_GET_INPUT_IDLE_NOTIFICATION_SINCE
