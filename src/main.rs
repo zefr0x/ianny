@@ -146,7 +146,7 @@ fn main() -> ! {
     let (signal_sender, signal_receiver) = mpsc::sync_channel(2);
 
     // Timer thread
-    std::thread::spawn(move || {
+    std::thread::spawn(move || -> ! {
         let pause_duration = core::cmp::min(
             gcd::binary_u64(
                 CONFIG.timer.short_break_timeout,
@@ -184,21 +184,21 @@ fn main() -> ! {
             }
 
             if signal_receiver.try_recv() == Ok(wayland::Signal::Idled) {
-                // NOTE: If both idle and resume happen right here,
-                // resume will be dropped and a race condition will happen in the next loop.
+                // Wait for change, tell user resume from idle.
+                loop {
+                    if signal_receiver.recv() == Ok(wayland::Signal::Resumed) {
+                        // Clean the channel from any other event.
+                        while signal_receiver.try_recv().is_ok() {}
 
-                // Wait for change, when user resume from idle.
-                assert_eq!(signal_receiver.recv().unwrap(), wayland::Signal::Resumed);
+                        // Reset timers.
+                        long_time_pased = 0;
+                        short_time_pased = 0;
+                        last_time = Instant::now();
 
-                // Avoid race condition by cleaning the channel.
-                while signal_receiver.try_recv().is_ok() {}
-
-                // Reset timers.
-                long_time_pased = 0;
-                short_time_pased = 0;
-                last_time = Instant::now();
-
-                info!("Timer resetted");
+                        info!("Timer resetted");
+                        break;
+                    }
+                }
             } else if long_time_pased >= CONFIG.timer.long_break_timeout {
                 info!("Long break starts");
 
