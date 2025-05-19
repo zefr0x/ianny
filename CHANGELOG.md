@@ -1,5 +1,17 @@
 # Unreleased
 
+# 2.1.1
+
+## Fixed
+
+- Panic when two consecutive idle signals are sent.
+- Old `ext_idle_notification_v1` object wasn't destroyed in new seat dispatch event.
+- Faulty comparison of compositor's `ext_idle_notifier_v1` version caused fault fallback from `timer.ignore_idle_inhibitors` config option.
+
+## Dependencies
+
+- All dependencies are up to date.
+
 # 2.1.0
 
 ## Added
