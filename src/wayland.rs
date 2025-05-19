@@ -118,7 +118,7 @@ impl wayland_client::Dispatch<wl_seat::WlSeat, ()> for State {
 
             let idle_notification = if CONFIG.timer.ignore_idle_inhibitors
                 && idle_notifier.version()
-                    > ext_idle_notifier_v1::REQ_GET_INPUT_IDLE_NOTIFICATION_SINCE
+                    >= ext_idle_notifier_v1::REQ_GET_INPUT_IDLE_NOTIFICATION_SINCE
             {
                 idle_notifier.get_input_idle_notification(idle_timeout, seat, queue_handle, ())
             } else {
