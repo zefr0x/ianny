@@ -63,7 +63,7 @@ impl Config {
 
     fn get_config_file() -> std::path::PathBuf {
         xdg::BaseDirectories::with_prefix(crate::APP_ID)
-            .expect("Can't find XDG base directories")
             .get_config_file("config.toml")
+            .expect("Can't find XDG base config directory")
     }
 }

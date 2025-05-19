@@ -25,10 +25,10 @@ simple_logger = { version = "5.0.0", default-features = false, features = [
   "stderr",
 ] }
 single-instance = "0.3.3"
-toml = "0.8.21"
-wayland-client = "0.31.8"
-wayland-protocols = { version = "0.32.6", features = ["client", "staging"] }
-xdg = "2.5.2"
+toml = "0.8.22"
+wayland-client = "0.31.10"
+wayland-protocols = { version = "0.32.8", features = ["client", "staging"] }
+xdg = "3.0.0"
 
 # TODO: Consider commented lints when they are stable.
 [lints.rust]
