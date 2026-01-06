@@ -1,6 +1,6 @@
 [package]
 name = "ianny"
-version = "2.1.1"
+version = "2.1.2"
 authors = ["zefr0x"]
 edition = "2024"
 description = "Desktop utility that helps preventing repetitive strain injuries by keeping track of usage patterns and periodically informing user to take breaks"

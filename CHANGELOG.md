@@ -1,5 +1,11 @@
 # Unreleased
 
+# 2.1.2
+
+## Dependencies
+
+- All dependencies are up to date.
+
 # 2.1.1
 
 ## Fixed
