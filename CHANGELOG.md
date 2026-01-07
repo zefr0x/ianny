@@ -1,5 +1,11 @@
 # Unreleased
 
+# 2.1.3
+
+## CI/CD
+
+- Automatic builds are now done in `release` mode, minimizing the binary size and maximizing its performance.
+
 # 2.1.2
 
 ## Dependencies

@@ -1,5 +1,5 @@
 project('ianny', 'rust',
-  version : '2.1.2',
+  version : '2.1.3',
   license : 'GPL3',
   default_options : ['warning_level=2'])
 
