@@ -85,7 +85,7 @@ jobs:
 
         # FIX: Building for arm and i686 with meson
       - name: Setup
-        run: meson builddir -Drustc_target=${{ matrix.target }}
+        run: meson builddir --buildtype=plain -Drustc_target=${{ matrix.target }}
 
       - name: Build
         run: meson install -C builddir --destdir "builds/${{ matrix.target }}"
